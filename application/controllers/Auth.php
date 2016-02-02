@@ -2,8 +2,7 @@
 
 class Auth extends CI_Controller {
 
-	function __construct()
-	{
+	function __construct(){
 		parent::__construct();
 		$this->load->database();
 		$this->load->library(array('ion_auth','form_validation'));
@@ -15,8 +14,7 @@ class Auth extends CI_Controller {
 	}
 
 	// redirect if needed, otherwise display the user list
-	function index()
-	{
+	function index(){
 
 		if (!$this->ion_auth->logged_in())
 		{
@@ -526,8 +524,7 @@ class Auth extends CI_Controller {
 	{
 		$this->data['title'] = "Edit User";
 
-		if (!$this->ion_auth->logged_in() || (!$this->ion_auth->is_admin() && !($this->ion_auth->user()->row()->id == $id)))
-		{
+		if (!$this->ion_auth->logged_in() || (!$this->ion_auth->is_admin() && !($this->ion_auth->user()->row()->id == $id))){
 			redirect('auth', 'refresh');
 		}
 
@@ -537,6 +534,9 @@ class Auth extends CI_Controller {
 
 		// validate form input
 		$this->form_validation->set_rules('first_name', $this->lang->line('edit_user_validation_fname_label'), 'required');
+		
+		$this->form_validation->set_rules('email', $this->lang->line('edit_user_validation_email_label'), 'required|valid_email');
+		
 		$this->form_validation->set_rules('last_name', $this->lang->line('edit_user_validation_lname_label'), 'required');
 		$this->form_validation->set_rules('phone', $this->lang->line('edit_user_validation_phone_label'), 'required');
 		$this->form_validation->set_rules('company', $this->lang->line('edit_user_validation_company_label'), 'required');
@@ -563,6 +563,7 @@ class Auth extends CI_Controller {
 					'last_name'  => $this->input->post('last_name'),
 					'company'    => $this->input->post('company'),
 					'phone'      => $this->input->post('phone'),
+					'email'		 => $this->input->post('email'),
 				);
 
 				// update the password if it was posted
@@ -639,6 +640,13 @@ class Auth extends CI_Controller {
 			'id'    => 'first_name',
 			'type'  => 'text',
 			'value' => $this->form_validation->set_value('first_name', $user->first_name),
+		);
+		$this->data['email'] = array(
+			'name'  => 'email',
+			'id'    => 'email',
+			'type'  => 'text',
+			'value' => $this->form_validation->set_value('email', $user->email),
+			'readonly' =>"",
 		);
 		$this->data['last_name'] = array(
 			'name'  => 'last_name',
@@ -816,6 +824,21 @@ class Auth extends CI_Controller {
 		$view_html = $this->load->view($view, $this->viewdata, $returnhtml);
 
 		if ($returnhtml) return $view_html;//This will return html on 3rd argument being true
+	}
+	
+	public function delete_user($id = NULL){
+			if (!$this->ion_auth->logged_in() || (!$this->ion_auth->is_admin() && !($this->ion_auth->user()->row()->id == $id))){
+			redirect('auth', 'refresh');
+		}
+		$user_id = $this->uri->segment(3);
+		if($this->ion_auth->delete_user($id)){
+			$this->session->set_flashdata('message', $this->ion_auth->messages());
+			redirect("auth", 'refresh');
+		}else{
+			$this->session->set_flashdata('message', $this->ion_auth->messages());
+			redirect("auth", 'refresh');
+		}
+		
 	}
 
 }

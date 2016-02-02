@@ -24,6 +24,10 @@
             <?php echo lang('edit_user_phone_label', 'phone');?> <br />
             <?php echo form_input($phone);?>
       </p>
+      <p>
+            <?php echo lang('edit_user_email_label', 'email');?> <br />
+            <?php echo form_input($email);?>
+      </p>
 
       <p>
             <?php echo lang('edit_user_password_label', 'password');?> <br />
@@ -60,7 +64,11 @@
 
       <?php echo form_hidden('id', $user->id);?>
       <?php echo form_hidden($csrf); ?>
+      
 
       <p><?php echo form_submit('submit', lang('edit_user_submit_btn'));?></p>
 
 <?php echo form_close();?>
+
+<br><p>  <?php echo anchor('auth/delete_user/'.$user->id, 'Delete User');?>  </p>
+
