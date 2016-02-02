@@ -20,6 +20,7 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('welcome_message');
+		redirect('auth/login');
+		echo "THIS IS A STEST MOTHER FUCKER";
 	}
 }
