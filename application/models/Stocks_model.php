@@ -23,12 +23,14 @@ class Stocks_model extends CI_Model{
                 }
             }
             $url .= "quote?format=json";
-            return $url;
-
-        
-        foreach($stocks as $stock){
-            
-        }
+            $ch = curl_init($url);
+	        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	    
+	        $results = json_decode(curl_exec($ch), true);
+	        $quotes=$results['list']['resources'];
+	        for($i=0;$i<count($quotes); $i++){
+	            $quotes_array["{$i}"] = $quotes["{$i}"]['resource']['fields'];
+	        }
+	        return ($quotes_array);
     }
 }
     

@@ -14,29 +14,28 @@ class Admin extends CI_Controller{
 	
 	public function index(){
 	    if (!$this->ion_auth->logged_in()){	redirect('auth/login', 'refresh');	}
-	    echo "this is a test <br>";
-	    //$this->load->view('admin_header');
+	    $this->load->library(array('table', 'form_validation'));
+	    $this->load->helper('form');
 	    
-	    echo "<br><br>";
-	    echo $this->stocks_model->live_price(array('GE', 'AAPL','TSLA'));
-	    $url = "http://finance.yahoo.com/webservice/v1/symbols/AAPL,GE/quote?format=json";
-	    $ch = curl_init($url);
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	    
-	    $results = json_decode(curl_exec($ch), true);
+	    echo form_open("admin/index");
+	    $data=array(
+	    	'class' 	=>'stocks',
+	    	'value' =>'',
+	    	'style' =>'',);
+	    $num_stocks = 5; 
+	    for($i=0;$i<$num_stocks;$i++){
+	    	echo form_input(array_merge($data, array('id'=>"stock{$i}")));
+	    }
+	    echo "<br>".form_submit('submit', 'Get Prices');
+	    echo form_close();
 	    
 	    
-       //$url = "http://stocktwits.com/symbol/TSLA";
-       //$ch = curl_init($url);
-       
-       //curl_setopt($ch, CURLOPT_HEADER, false);
-       //$curl_scraped_page = curl_exec($ch);
-       curl_close($ch);
-       
-       echo "<pre>";print_r($results);echo "</pre>";
+	    $stocks =$this->stocks_model->live_price(array('GE', 'AAPL','TSLA', 'GPRO'));
+	    $this->table->set_heading(array_keys($stocks[0]));
+	    echo $this->table->generate($stocks);
+	    
+	    
 	   
-	   echo "<pre>";
-	   print_r($results['list']['resources']['0']['resource']['fields']);
-	   echo "</pre>";
 	}
 }
 
