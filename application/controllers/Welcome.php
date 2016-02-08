@@ -18,9 +18,48 @@ class Welcome extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
-	public function index()
-	{
-		redirect('auth/login');
-		echo "THIS IS A STEST MOTHER FUCKER";
+	 
+	 function __construct(){
+	 	parent::__construct();
+	 	$this->load->model('post');
+  }
+	public function index(){
+		
+		echo form_open('Welcome/add');
+		echo form_input('title', 'Post Title');
+		echo form_input(array('name'=>'content','id'=>'content','type'=>'textarea'));
+		echo form_submit('submti','Submit this Shit');
+		echo form_close();
+		echo "<pre>";
+		
+		print_r(Post::find_by_id(4));
+		echo "</pre>";
+		
+		echo "<hr>";
+		$posts = $this->post->find_all();
+		foreach($posts as $post){
+			echo "<h3>".$post->title ."</h3>: " . $post->id ."<br>";
+			echo "<p>".$post->content ."</p><br>";
+			echo form_open("Welcome/delete/{$post->id}");
+			echo form_submit('submit', 'Delete');
+			echo form_close();
+		}
+		
+		
+	}
+	
+	public function add(){
+		$post = new Post;
+		$post->title = $this->input->post('title');
+		$post->content = $this->input->post('content');
+		$post->save();
+		redirect('welcome');
+	}
+	public function delete(){
+		$id = $this->uri->segment(3);
+		$post = Post::find_by_id($id);
+		print_r($post);
+		$post->delete();
+		redirect('welcome');
 	}
 }

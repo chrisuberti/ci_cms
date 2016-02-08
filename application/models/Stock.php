@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-class Stocks_model extends CI_Model{
+class Stock extends MY_Model{
     
    //public $stocks=array();
     public $yahoo_base_url = "http://finance.yahoo.com/webservice/v1/";

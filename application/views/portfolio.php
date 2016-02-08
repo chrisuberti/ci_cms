@@ -15,7 +15,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	    $data=array(
 	    	'id' 	=>'stocks',
 	    	'value' =>'',
-	    	'style' =>'',);
+	    	'style' =>'',
+	    	'type' =>'text');
 	    $num_stocks = 5; 
 	    for($i=0;$i<$num_stocks;$i++){
 	    	echo form_input(array_merge($data, array('name'=>"stock{$i}")));
@@ -26,16 +27,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
     <?php if($this->input->post('submit')):?>
     <h3>Buy Some Stocks Fool</h3>
+    <?php $this->table->set_heading(array_keys($stocks_query[0]));?>
+    <?php echo $this->table->generate($stocks_query);?>
     <?php endif;?>
-    
-    
-    
-    
     
     <h3>Outstanding Stocks</h3>
     <?php $this->table->set_heading(array_keys($porfolio_stocks[0]));?>
     <?php echo $this->table->generate($porfolio_stocks);?>
-    
     
     
 </body>

@@ -5,39 +5,51 @@ class MY_Model extends CI_Model{
   const DB_TABLE = 'abstract';
   const DB_TABLE_PK = 'abstract'; //primary key
   
+  private static $db;
+  
+  /*
+  SELF:: refers to the same class in which the keyword/variable/function is written i.e. if i use self in this file I will be referencing something within this file
+  STATIC:: refers to whatever calss (i.e. )
+  
+  */
+  
   //This is setup for an individual row...I think
   
   //create record
-  private function insert(){
-      $this->db->insert($this::DB_TABLE, $this);
-      $this->{$this::DB_TABLE_PK} = $this->db->insert_id();
+  function __construct(){
+    parent::__construct();
+    self::$db =&get_instance()->db;
+  }
+  
+  static function find_all(){
+		$query = self::$db->get(static::DB_TABLE)->custom_result_object(get_called_class());
+	  return $query;
+	}
+	
+	static function find_by_id($id = ""){
+	  $query = self::$db->where('id', $id)->get(static::DB_TABLE)->custom_result_object(get_called_class());
+	  return $query[0];
+	}
+	  
+  public function insert(){
+      $this->db->insert(static::DB_TABLE, $this);
+      $this->{static::DB_TABLE_PK} = $this->db->insert_id();
   }
   
   
   private function update(){
-    $this->db->update($this::DB_TABLE, $this, $this::DB_TABLE_PK);
+    $this->db->update(static::DB_TABLE, $this, static::DB_TABLE_PK);
     
   }
   
-  public function populate($row){
-    foreach ($row as $key => $value){
-      $this->$key = $value;
-    }
-  }
   
-  public function load($id){
-    $query = $this->db->get_where($this::DB_TABLE, array(
-      $this::DB_TABLE_PK => $id,));
-      $this->populate($query->row());
-  }
   public function delete(){
-    $this->db->delete($this::DB_TABLE, array($this::DB_TABLE_PK => $this->{$this::DB_TABLE_PK},));
-  
-    unset($this->{$this::DB_TABLE_PK});
+    $this->db->delete(static::DB_TABLE, array(static::DB_TABLE_PK => $this->{static::DB_TABLE_PK},));
+    unset($this->{static::DB_TABLE_PK});
   }  
   
   public function save(){
-    if(isset($this->{$this::DB_TABLE_PK})){
+    if(isset($this->{static::DB_TABLE_PK})){
       $this->update();
     }
     else {
@@ -45,18 +57,18 @@ class MY_Model extends CI_Model{
     }
   }
   
-  public function get($limit=0, $offset = 0){
+  static function get($limit=0, $offset = 0){
     if($limit){
-      $query = $this->db->get($this::DB_TABLE, $limit, $offset);
+      $query = self::$db->get(static::DB_TABLE, $limit, $offset);
     }else{
-        $query = $this->db->get($this::DB_TABLE);
+        $query = self::$db->get(static::DB_TABLE);
     }
     $ret_val = array();
-    $class = get_class($this);
+    $class = get_called_class();
     foreach ($query->result() as $row){
         $model = new $class;
         $model->populate($row);
-        $ret_val[$row->{$this::DB_TABLE_PK}] = $model;
+        $ret_val[$row->{static::DB_TABLE_PK}] = $model;
     }
     return $ret_val;
   }

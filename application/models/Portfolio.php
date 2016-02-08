@@ -1,13 +1,14 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-class Portfolios extends MY_Model{
+class Portfolio extends MY_Model{
     const DB_TABLE = 'portfolios';
     const DB_TABLE_PK = 'id'; //primary key
     
     public $id;
     public $portfolio_name;
     public $current_cap;
+    public $begining_cap;
     public $last_trade;
     public $user_id;
     

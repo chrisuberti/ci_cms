@@ -1,13 +1,13 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Portfolio extends CI_Controller{
+class Portfolios extends CI_Controller{
 
 	function __construct(){
 	    parent::__construct();
 		$this->load->library(array('form_validation'));
-		$this->load->helper(array('url','language'));
-		$this->load->model('stocks_model');
-		$this->load->model('portfolios');
+		$this->load->helper(array('language'));
+		$this->load->model('stock');
+		$this->load->model('portfolio');
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
         
@@ -21,8 +21,13 @@ class Portfolio extends CI_Controller{
 	    	foreach($_POST as $symbol){
 	    		$stocks_query[] = $symbol;
 	    	}
-	    	print_r($stocks_query);
-	    	
+	    	array_pop($stocks_query);
+	    	$stocks_query = $this->stock->live_price($stocks_query);
+	    	$attributes = array('class' => 'buy-stock', 'id'=>'buy-stock');
+	    	for($i=0;$i<count($stocks_query); $i++){
+	    		$stocks_query[$i]['']= form_open('portfolio/buy/id').form_submit('buy_stock', 'Buy').form_close();
+	    	}
+	    	$data['stocks_query']=$stocks_query;
 	    }
 	    
 	    
@@ -32,7 +37,7 @@ class Portfolio extends CI_Controller{
 	    
 	    
 	   
-	    $data['porfolio_stocks'] =$this->stocks_model->live_price(array('GE', 'AAPL','TSLA', 'GPRO'));
+	    $data['porfolio_stocks'] =$this->stock->live_price(array('GE', 'AAPL','TSLA', 'GPRO'));
 	    $this->load->view('portfolio', $data);
 	    
 	   
