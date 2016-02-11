@@ -32,7 +32,7 @@ class Welcome extends CI_Controller {
 		echo form_close();
 		echo "<pre>";
 		
-		print_r(Post::find_by_id(4));
+		print_r(Post::find_by('title','Post Title'));
 		echo "</pre>";
 		
 		echo "<hr>";
@@ -58,7 +58,6 @@ class Welcome extends CI_Controller {
 	public function delete(){
 		$id = $this->uri->segment(3);
 		$post = Post::find_by_id($id);
-		print_r($post);
 		$post->delete();
 		redirect('welcome');
 	}

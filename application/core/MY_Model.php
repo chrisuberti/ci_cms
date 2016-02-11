@@ -23,12 +23,18 @@ class MY_Model extends CI_Model{
   
   static function find_all(){
 		$query = self::$db->get(static::DB_TABLE)->custom_result_object(get_called_class());
+	  $query = empty($query) ? false : $query;
 	  return $query;
 	}
 	
 	static function find_by_id($id = ""){
 	  $query = self::$db->where('id', $id)->get(static::DB_TABLE)->custom_result_object(get_called_class());
 	  return $query[0];
+	}
+	
+	static function find_by($column = "", $column_val = ""){
+	  $query = self::$db->where($column, $column_val)->get(static::DB_TABLE)->custom_result_object(get_called_class());
+	  return $query;
 	}
 	  
   public function insert(){

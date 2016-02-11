@@ -2,6 +2,18 @@
 
 
 class Stock extends MY_Model{
+    const DB_TABLE = 'trades';
+    const DB_TABLE_PK = 'id'; //primary key
+    
+    public $id;
+    public $user_id;
+    public $portfolio_id;
+    public $symbol;
+    public $purchase_time;
+    public $purchase_price;
+    public $shares;
+    public $sale_time;
+    public $sale_price;
     
    //public $stocks=array();
     public $yahoo_base_url = "http://finance.yahoo.com/webservice/v1/";
@@ -31,6 +43,15 @@ class Stock extends MY_Model{
 	            $quotes_array["{$i}"] = $quotes["{$i}"]['resource']['fields'];
 	        }
 	        return ($quotes_array);
+    }
+    
+    public function buy($symbol=""){
+        $url = $this->yahoo_base_url . "symbols/";
+        $url .= $symbol."quote?format=json";
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	    
+        $results = json_decode(curl_exec($ch), true);
+        $quotes=$results['list']['resources'];
+        return ($quotes[0]);
     }
 }
     

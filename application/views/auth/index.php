@@ -2,7 +2,7 @@
 <p><?php echo lang('index_subheading');?></p>
 
 <div id="infoMessage"><?php echo $message;?></div>
-
+<?php echo anchor('portfolios', 'Go to Portfolios');?>
 <table cellpadding=0 cellspacing=10>
 	<tr>
 		<th><?php echo lang('index_fname_th');?></th>

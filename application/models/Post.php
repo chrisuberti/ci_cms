@@ -5,8 +5,7 @@ class Post extends MY_Model{
     const DB_TABLE = 'posts';
     const DB_TABLE_PK = 'id';
     
-    public static $db_fields=array('id','title','content');
-    
+    //Need to list out all the db fields here
     public $id;
     public $title;
     public $content;
