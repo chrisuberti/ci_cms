@@ -44,7 +44,8 @@ class MY_Model extends CI_Model{
   
   
   private function update(){
-    $this->db->update(static::DB_TABLE, $this, static::DB_TABLE_PK);
+    $this->db->where('id', $this->{static::DB_TABLE_PK});
+    $this->db->update(static::DB_TABLE, $this);
     
   }
   

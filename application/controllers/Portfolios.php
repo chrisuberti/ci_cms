@@ -13,7 +13,12 @@ class Portfolios extends CI_Controller{
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
         }
         
-        
+       
+	
+/*
+************************************************************************
+
+*/
         
 	public function index(){
 		 if (!$this->ion_auth->logged_in()){	redirect('auth/login', 'refresh');	}
@@ -26,6 +31,11 @@ class Portfolios extends CI_Controller{
 		
 		
 	}
+	
+/*
+************************************************************************
+
+*/
 	
 	public function add(){
 		
@@ -45,15 +55,29 @@ class Portfolios extends CI_Controller{
 		redirect('portfolios');
 		
 	}
+	
+/*
+************************************************************************
+
+*/
 	public function delete(){
 		$id = $this->uri->segment(3);
 		$post = Portfolio::find_by_id($id);
 		$post->delete();
 		redirect('portfolios');
 	}
+	
+	
+/*
+************************************************************************
+
+*/
 	public function view(){
 		$portfolio_id = $this->uri->segment(3);
-		$data['portfolio_stocks'] = $this->stock->find_by('portfolio_id', $portfolio_id);
+		
+		$data['portfolio'] = Portfolio::find_by_id($portfolio_id);
+		
+		
 		
 		if(null!==$this->input->post('submit_stock_query')){
 	    	//fill this section if a certain post value is submitted, like a buy
@@ -62,54 +86,79 @@ class Portfolios extends CI_Controller{
 	    		$stocks_query[] = $symbol;
 	    	}
 	    	array_pop($stocks_query);
-	    	$stocks_query = $this->stock->live_price($stocks_query);
-	    	$attributes = array('class' => 'buy-stock', 'id'=>'buy-stock');
+	    	$stocks_query = $this->stock->live_quotes($stocks_query);
+	    	// Generate table of queried stocks
 	    	for($i=0;$i<count($stocks_query); $i++){
 	    		//Add Buy form
 	    		$stocks_query[$i]['']= 
-	    		form_open('portfolio/buy/id/')
+	    		form_open('portfolios/buy')
 	    		.form_hidden('stock_symbol', $stocks_query[$i]['symbol'])
+	    		.form_hidden('portfolio_id', $portfolio_id)
+	    		.form_input( array('name'=>'shares','placeholder'=>'Shares', 'type'=>'number'))
 	    		.form_submit('buy_stock', 'Buy')
 	    		.form_close();
 	    	}
 	    	$data['stocks_query']=$stocks_query;
 	    }
-	    if(null!==$this->input->post('stock_buy')){
-	    	
-	    }
+	    
+	    
+	    //Generate table of 
+	    
+	    
+	    $data['portfolio_stocks'] = $this->stock->find_by('portfolio_id', $portfolio_id);
+		//preprint($data['portfolio_stocks']);
 	    $this->load->view('stocks', $data);
 	}
+	
+/*
+************************************************************************
 
+*/
+	public function sell(){
+		
+		//Add logic to make sure stock isn't already sold 
+		//i.e. 
+		$this->load->model(array('portfolio', 'stock'));
+		$id = $this->input->post('trade_id');
+		$stock = Stock::find_by_id($id);
+		$stock->sale_time = date("Y-m-d H:i:s");
+		$stock->sale_price = $this->input->post('current_val');
+		$stock->save();
+		preprint($stock);
+		
+		redirect('portfolios/view/'.$stock->portfolio_id);
+		
+	}
+	/*
+************************************************************************
 
-	public function old(){
-	    if (!$this->ion_auth->logged_in()){	redirect('auth/login', 'refresh');	}
-	    if(null!==$this->input->post('submit_stock_query')){
-	    	echo "TEST";
-	    	//fill this section if a certain post value is submitted, like a buy
-	    	$stocks_query=array();
-	    	foreach($_POST as $symbol){
-	    		$stocks_query[] = $symbol;
-	    	}
-	    	array_pop($stocks_query);
-	    	$stocks_query = $this->stock->live_price($stocks_query);
-	    	$attributes = array('class' => 'buy-stock', 'id'=>'buy-stock');
-	    	for($i=0;$i<count($stocks_query); $i++){
-	    		$stocks_query[$i]['']= form_open('portfolio/buy/id').form_submit('buy_stock', 'Buy').form_close();
-	    	}
-	    	$data['stocks_query']=$stocks_query;
-	    }
-	    
-	    
-	    
-	    $this->load->library(array('table', 'form_validation'));
-	    $this->load->helper('form');
-	    
-	    
-	   
-	    $data['portfolio_stocks'] =$this->stock->live_price(array('GE', 'AAPL','TSLA', 'GPRO'));
-	    
-	    $this->load->view('stocks', $data);
-	    
-	   
+*/
+	public function buy(){
+		$this->load->model(array('portfolio', 'stock'));
+		$stock_symbol = $this->input->post('stock_symbol');
+		$stock_info = $this->stock->single_quote($stock_symbol);
+		$shares = $this->input->post('shares');
+		$stock = new Stock;
+		$stock->portfolio_id = $this->input->post('portfolio_id');
+		$stock->user_id = Portfolio::find_by_id($this->input->post('portfolio_id'))->user_id;
+		$stock->symbol = $this->input->post('stock_symbol');
+		//need to add market open date verification
+		$stock->purchase_time = date("Y-m-d H:i:s");
+		$stock->purchase_price = $stock_info['price'];
+		$stock->shares = $this->input->post('shares');
+		$stock->save();
+		redirect('portfolios/view/'.$stock->portfolio_id);
+		
+	}
+/*
+************************************************************************
+
+*/
+
+	public function get_porfolio_history(){
+		
+	}
+	public function current_value_stocks(){
+		
 	}
 }

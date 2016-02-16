@@ -4,6 +4,9 @@
 class Stock extends MY_Model{
     const DB_TABLE = 'trades';
     const DB_TABLE_PK = 'id'; //primary key
+
+    const YAHOO_BASE_URL = "http://finance.yahoo.com/webservice/v1/";
+    
     
     public $id;
     public $user_id;
@@ -16,15 +19,14 @@ class Stock extends MY_Model{
     public $sale_price;
     
    //public $stocks=array();
-    public $yahoo_base_url = "http://finance.yahoo.com/webservice/v1/";
     
     public function __construct(){
         parent::__construct();
        
     }
     
-    public function live_price($stocks=array()){
-        $url = $this->yahoo_base_url . "symbols/";
+    public function live_quotes($stocks=array()){
+        $url ="http://finance.yahoo.com/webservice/v1/". "symbols/";
         $num_stocks = count($stocks);
         
             for($i=0;$i<$num_stocks; $i++){
@@ -45,13 +47,29 @@ class Stock extends MY_Model{
 	        return ($quotes_array);
     }
     
-    public function buy($symbol=""){
-        $url = $this->yahoo_base_url . "symbols/";
-        $url .= $symbol."quote?format=json";
+    public function single_quote($symbol=""){
+        //this only returns information for a single stock
+        //This could possibly be accomplished by the above function alone
+        $url = "http://finance.yahoo.com/webservice/v1/" . "symbols/";
+        $url .= $symbol."/quote?format=json";
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	    
         $results = json_decode(curl_exec($ch), true);
-        $quotes=$results['list']['resources'];
-        return ($quotes[0]);
+        $quotes=$results['list']['resources'][0]['resource']['fields'];
+        return ($quotes);
+        
+    }
+    public function get_price($symbol=""){
+        //this only returns information for a single stock
+        //This could possibly be accomplished by the above function alone
+        $url = "http://finance.yahoo.com/webservice/v1/" . "symbols/";
+        $url .= $symbol."/quote?format=json";
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	    
+        $results = json_decode(curl_exec($ch), true);
+        $quotes=$results['list']['resources'][0]['resource']['fields'];
+        return ($quotes['price']);
+        
     }
 }
     

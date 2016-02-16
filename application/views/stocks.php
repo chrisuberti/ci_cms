@@ -8,6 +8,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <title>Stock Tool</title>
 </head>
 <body>
+    <div>
+        <h3>Portfolio Details</h3>
+        <table>
+            <tr><th>Portfolio Name:</th><td><?php echo $portfolio->portfolio_name;?></tr></td>
+            <tr><th>Stocks + Cash: </th><td></td></tr>
+            <tr><th>Cash: </th><td><?php echo print_money($portfolio->current_cap);?></td></tr>
+            <tr><th>Stocks: </th></tr>
+            <tr><th>Gains: </th><td></td></tr>
+        </table>
+    </div>
     <h3>Pick some Stocks Fool</h3>
     <div class="stock-query">
     <?php 
@@ -31,11 +41,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <?php echo $this->table->generate($stocks_query);?>
     <?php endif;?>
     
+    <?php //if(count($porfolio_stocks)>0):?>
     <h3>Outstanding Stocks</h3>
-    <?php if(!empty($porfolio_stocks)):?>
-    <?php $this->table->set_heading(array_keys($porfolio_stocks[0]));?>
-    <?php echo $this->table->generate($porfolio_stocks);?>
-    <?php endif;?>
-    
+    <table>
+        <th>
+            <td>Symbol</td>
+            <td>Shares</td>
+            <td>Purchase Price</td>
+            <td>Current Price</td>
+            <td>Current Value</td>
+            <td>Gains</td>
+            <td>Actions</td>
+        </th>
+        <?php //$this->table->set_heading(array_keys($portfolio_stocks[0]));?>
+        <?php foreach($portfolio_stocks as $stock): ?>
+        <?php 
+        $current_price = $this->stock->get_price($stock->symbol); 
+        $purchase_price = $stock->purchase_price;
+        $shares = $stock->shares;
+        $gains = $shares*($current_price-$purchase_price);
+        $sell_form = form_open('portfolios/sell')
+        .form_hidden('trade_id', $stock->id)
+        .form_hidden('current_val', $current_price)
+        .form_submit('sell_stock', 'Sell')
+        .form_close();
+        ?>
+        <tr>
+            <td></td>
+            <td><?php echo $stock->symbol; ?></td>
+            <td><?php echo $shares;?></td>
+            <td><?php echo print_money($purchase_price); ?></td>
+            <td><?php echo print_money($current_price); ?></td>
+            <td><?php echo print_money($current_price*$shares);?></td>
+            <td><?php echo print_money($gains);?></td>
+            <td><?php echo $sell_form;?></td>
+        </tr>
+        <?php endforeach;?>
+    </table>
 </body>
 </html>
