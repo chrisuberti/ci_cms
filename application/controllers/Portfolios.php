@@ -1,16 +1,16 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Portfolios extends CI_Controller{
+class Portfolios extends MY_Controller{
 
 	function __construct(){
 	    parent::__construct();
-		$this->load->library(array('form_validation'));
-		$this->load->helper(array('language'));
-		$this->load->model('stock');
-		$this->load->model('portfolio');
-		$this->load->library('table');
-
-		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
+//		$this->load->library(array('form_validation'));
+//		$this->load->helper(array('language'));
+//		$this->load->model('stock');
+//		$this->load->model('portfolio');
+//		$this->load->library('table');
+//
+//		$this->form_validation->set_error_delimiters($this->config->item//('error_start_delimiter', 'ion_auth'), $this->config->item//('error_end_delimiter', 'ion_auth'));
         }
         
        
@@ -75,8 +75,8 @@ class Portfolios extends CI_Controller{
 	public function view(){
 		$portfolio_id = $this->uri->segment(3);
 		
-		$data['portfolio'] = Portfolio::find_by_id($portfolio_id);
-		
+		$portfolio = Portfolio::find_by_id($portfolio_id);
+		$data['portfolio'] = $portfolio;
 		
 		
 		if(null!==$this->input->post('submit_stock_query')){
@@ -101,11 +101,14 @@ class Portfolios extends CI_Controller{
 	    	$data['stocks_query']=$stocks_query;
 	    }
 	    
+	    $data['outstanding_stocks'] = $this->get_current_stock_value();
 	    
 	    //Generate table of 
 	    
-	    
+	    $this->db->where('sale_time', NULL);
 	    $data['portfolio_stocks'] = $this->stock->find_by('portfolio_id', $portfolio_id);
+	    $data['outstanding_stock_value'] = $this->get_current_stock_value($data['portfolio_stocks']);
+	    $data['gains'] = $this->portfolio_gains($data['portfolio_stocks'], $portfolio);
 		//preprint($data['portfolio_stocks']);
 	    $this->load->view('stocks', $data);
 	}
@@ -124,8 +127,10 @@ class Portfolios extends CI_Controller{
 		$stock->sale_time = date("Y-m-d H:i:s");
 		$stock->sale_price = $this->input->post('current_val');
 		$stock->save();
-		preprint($stock);
-		
+		$portfolio = Portfolio::find_by_id($this->input->post('portfolio_id'));
+		$portfolio->current_cap = $portfolio->current_cap + ($stock->sale_price * $stock->shares);
+		$portfolio->last_trade = $stock->id;
+		$portfolio->save();
 		redirect('portfolios/view/'.$stock->portfolio_id);
 		
 	}
@@ -147,6 +152,10 @@ class Portfolios extends CI_Controller{
 		$stock->purchase_price = $stock_info['price'];
 		$stock->shares = $this->input->post('shares');
 		$stock->save();
+		$portfolio = Portfolio::find_by_id($this->input->post('portfolio_id'));
+		$portfolio->current_cap = $portfolio->current_cap - ($stock->purchase_price * $stock->shares);
+		$portfolio->last_trade = $stock->id;
+		$portfolio->save();
 		redirect('portfolios/view/'.$stock->portfolio_id);
 		
 	}
@@ -154,11 +163,19 @@ class Portfolios extends CI_Controller{
 ************************************************************************
 
 */
-
-	public function get_porfolio_history(){
-		
+	
+	public function get_current_stock_value($stocks=""){
+		$value = 0;
+		if(!empty($stocks)){
+			foreach($stocks as $stock){
+				$value += ($stock->shares * $this->stock->get_price($stock->symbol));
+			}
+		}
+		return $value;
 	}
-	public function current_value_stocks(){
-		
+	public function portfolio_gains($stocks="", $portfolio=""){
+		$stock_val = $this->get_current_stock_value($stocks);
+		$gains = ($portfolio->current_cap + $stock_val)/$portfolio->beginning_cap;
+		return percentage($gains-1);
 	}
 }

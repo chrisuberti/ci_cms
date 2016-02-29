@@ -17,7 +17,7 @@ class Portfolio extends MY_Model{
         parent::__construct();
        
     }
-    
+
 
     
 }

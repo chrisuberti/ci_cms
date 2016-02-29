@@ -10,12 +10,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body>
     <div>
         <h3>Portfolio Details</h3>
+        <?php echo anchor('portfolios', 'All Portfolios');?>
+        <br>
         <table>
+            
             <tr><th>Portfolio Name:</th><td><?php echo $portfolio->portfolio_name;?></tr></td>
-            <tr><th>Stocks + Cash: </th><td></td></tr>
+            <tr><th>Stocks + Cash: </th><td><?php echo print_money($outstanding_stock_value+$portfolio->current_cap);?></td></tr>
             <tr><th>Cash: </th><td><?php echo print_money($portfolio->current_cap);?></td></tr>
-            <tr><th>Stocks: </th></tr>
-            <tr><th>Gains: </th><td></td></tr>
+            <tr><th>Stocks: </th><td><?php echo print_money($outstanding_stock_value);?></td></tr>
+            <tr><th>Gains: </th><td><?php echo $gains;?></td></tr>
         </table>
     </div>
     <h3>Pick some Stocks Fool</h3>
@@ -62,6 +65,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         $gains = $shares*($current_price-$purchase_price);
         $sell_form = form_open('portfolios/sell')
         .form_hidden('trade_id', $stock->id)
+        .form_hidden('portfolio_id', $this->uri->segment(3))
         .form_hidden('current_val', $current_price)
         .form_submit('sell_stock', 'Sell')
         .form_close();
