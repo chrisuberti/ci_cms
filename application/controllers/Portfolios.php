@@ -26,7 +26,13 @@ class Portfolios extends MY_Controller{
 			$this->load->model('ion_auth_model');
 		 
 		 $data['portfolio_stocks'] = $this->portfolio->find_all();
-		 $this->load->view('portfolio', $data);
+		 
+		 $this->load->view('dressings/header');
+		 
+		 $this->load->view('dressings/navbar');
+		 $this->load->view('list_portfolios', $data);
+		 
+		 $this->load->view('dressings/footer');
 		
 		
 		
@@ -38,21 +44,41 @@ class Portfolios extends MY_Controller{
 */
 	
 	public function add(){
-		
-		$this->form_validation->set_rules('portfolio_name', 'Porfolio Name', 'required|is_unique[portfolios.portfolio_name]');
-        $this->form_validation->set_rules('beginning_cap', 'Starting Capital', 'required|numeric|greater_than[0]');       
-		if($this->form_validation->run()){
-			$portfolio = new Portfolio;
-			$portfolio->portfolio_name = $this->input->post('portfolio_name');
-			$portfolio->portfolio_description = $this->input->post('portfolio_description');
-			$portfolio->beginning_cap = $this->input->post('beginning_cap');
-			$portfolio->current_cap = $portfolio->beginning_cap;
-			$portfolio->starting_date = date("Y-m-d H:i:s");
-			$portfolio->user_id = $this->input->post('user_id');
-			$portfolio->save();
-		}else{
+		if(isset($_POST)){
+			$this->form_validation->set_rules('portfolio_name', 'Porfolio Name', 'required|is_unique[portfolios.portfolio_name]');
+	        $this->form_validation->set_rules('beginning_cap', 'Starting Capital', 'required|numeric|greater_than[0]');       
+			if($this->form_validation->run()){
+				$portfolio = new Portfolio;
+				$portfolio->portfolio_name = $this->input->post('portfolio_name');
+				$portfolio->portfolio_description = $this->input->post('portfolio_description');
+				$portfolio->beginning_cap = $this->input->post('beginning_cap');
+				$portfolio->current_cap = $portfolio->beginning_cap;
+				$portfolio->starting_date = date("Y-m-d H:i:s");
+				$portfolio->user_id = $this->input->post('user_id') + 1;
+				$checked = $this->input->post('commision_bool');
+				if((int) $checked == 1){
+					$portfolio->commision_bool=1;
+				}else{
+					$portfolio->commision_bool=0;
+				}
+				
+				$portfolio->commision = $this->input->post('commision');
+				$portfolio->save();
+				redirect('portfolios');
+			}else{
+				$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
+				$this->data['charts']=0;
+				$this->load->view('dressings/header');
+				$this->load->view('dressings/navbar');
+				$this->load->view('add_portfolio', $this->data);
+				$this->load->view('dressings/footer');	
+			
+				
+			}
 		}
-		redirect('portfolios');
+	
+		
+		
 		
 	}
 	

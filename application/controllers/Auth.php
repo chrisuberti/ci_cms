@@ -37,8 +37,10 @@ class Auth extends CI_Controller {
 			{
 				$this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
 			}
-
+			$this->load->view('dressings/header');
+			$this->load->view('dressings/navbar');
 			$this->_render_page('auth/index', $this->data);
+			$this->load->view('dressings/footer');
 		}
 	}
 
@@ -46,9 +48,9 @@ class Auth extends CI_Controller {
 	function login()
 	{
 		
-		print_r($this->session->userdata);
+	
 		$this->data['title'] = "Login";
-
+		$this->data['charts']=0;
 		//validate form input
 		$this->form_validation->set_rules('identity', 'Identity', 'required');
 		$this->form_validation->set_rules('password', 'Password', 'required');
@@ -84,13 +86,16 @@ class Auth extends CI_Controller {
 				'id'    => 'identity',
 				'type'  => 'text',
 				'value' => $this->form_validation->set_value('identity'),
+				'class'=>'form-control',
 			);
 			$this->data['password'] = array('name' => 'password',
 				'id'   => 'password',
 				'type' => 'password',
+				'class'=>'form-control',
 			);
-
+			$this->load->view('dressings/header_login');
 			$this->_render_page('auth/login', $this->data);
+			$this->load->view('dressings/footer');
 		}
 	}
 

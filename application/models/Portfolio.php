@@ -12,6 +12,8 @@ class Portfolio extends MY_Model{
     public $last_trade;
     public $starting_date;
     public $user_id;
+    public $commision;
+    public $commision_bool;
     
     public function __construct(){
         parent::__construct();

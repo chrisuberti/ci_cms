@@ -23,7 +23,14 @@ class Welcome extends CI_Controller {
 	 	parent::__construct();
 	 	$this->load->model('post');
   }
-	public function index(){
+  
+  public function index(){
+  	$this->load->view('dressings/header');
+  	$this->load->view('dressings/navbar');
+  	$this->load->view('index_view');
+  	$this->load->view('dressings/footer');
+  }
+	public function test(){
 		
 		echo form_open('Welcome/add');
 		echo form_input('title', 'Post Title');
