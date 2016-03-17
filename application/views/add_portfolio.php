@@ -1,3 +1,7 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+?>
+
 <div id="page-wrapper">
     <div class = "" id="add-portfolio-form">
         <?php //echo anchor('portfolios/add', '+ Create New Portfolio');?>

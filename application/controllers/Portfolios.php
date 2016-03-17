@@ -129,14 +129,45 @@ class Portfolios extends MY_Controller{
 	    
 	    $data['outstanding_stocks'] = $this->get_current_stock_value();
 	    
-	    //Generate table of 
+	    //Generate table of current stocks
 	    
 	    $this->db->where('sale_time', NULL);
 	    $data['portfolio_stocks'] = $this->stock->find_by('portfolio_id', $portfolio_id);
 	    $data['outstanding_stock_value'] = $this->get_current_stock_value($data['portfolio_stocks']);
 	    $data['gains'] = $this->portfolio_gains($data['portfolio_stocks'], $portfolio);
 		//preprint($data['portfolio_stocks']);
+		
+		
+		
+		//Get historical data of stock purchases
+		$this->db->where('sale_time !=', NULL);
+		$trades = $this->stock->find_by('portfolio_id', $portfolio_id);
+		
+		//Generate Table
+		 $this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='history_table'>"));
+		$this->table->set_heading('Security', 'Shares', 'Gains', 'Portfolio Value','Time Bought', 'Opening Price', 'Time Sold', 'Closing Price');
+		$chart_vars = array();
+		foreach($trades as $trade){
+			$symbol=$trade->symbol; $shares = $trade->shares; $purchase_price = $trade->purchase_price; $sale_price = $trade->sale_price;
+			$gains = $shares*(($sale_price-$purchase_price)/$purchase_price);
+			
+			$trade_capital = $portfolio->beginning_cap + $gains;
+			
+			$chart_vars[]=array('time'=>strtotime($trade->purchase_time), 'value' => $trade_capital);
+			
+			if($gains > 0 ){ $gains_cell = array('data' =>print_money($gains), 'class'=>'success');}elseif($gains<0){  $gains_cell = array('data' =>print_money($gains), 'class'=>'danger');}
+			$this->table->add_row($symbol, $shares, $gains_cell,print_money($trade_capital), $trade->purchase_time, print_money($purchase_price), $trade->sale_time, print_money($sale_price));
+		}
+		
+		$data['chart_vars']=json_encode($chart_vars);
+		$data['historical_trades'] = $this->table->generate();
+		
+		//DISPLAY PAGE
+		$data['charts']=TRUE;
+		$this->load->view('dressings/header');
+		$this->load->view('dressings/navbar');
 	    $this->load->view('stocks', $data);
+	    $this->load->view('dressings/footer');
 	}
 	
 /*
@@ -154,7 +185,12 @@ class Portfolios extends MY_Controller{
 		$stock->sale_price = $this->input->post('current_val');
 		$stock->save();
 		$portfolio = Portfolio::find_by_id($this->input->post('portfolio_id'));
-		$portfolio->current_cap = $portfolio->current_cap + ($stock->sale_price * $stock->shares);
+		if($portfolio->commision_bool == 1){
+			$portfolio->current_cap = $portfolio->current_cap + ($stock->sale_price * $stock->shares)-$portfolio->commision;
+		}else{
+			$portfolio->current_cap = $portfolio->current_cap + ($stock->sale_price * $stock->shares);
+		}
+		
 		$portfolio->last_trade = $stock->id;
 		$portfolio->save();
 		redirect('portfolios/view/'.$stock->portfolio_id);
@@ -179,7 +215,14 @@ class Portfolios extends MY_Controller{
 		$stock->shares = $this->input->post('shares');
 		$stock->save();
 		$portfolio = Portfolio::find_by_id($this->input->post('portfolio_id'));
-		$portfolio->current_cap = $portfolio->current_cap - ($stock->purchase_price * $stock->shares);
+		//$portfolio->current_cap = $portfolio->current_cap - ($stock->purchase_price * $stock->shares);
+		if($portfolio->commision_bool == 1){
+			$portfolio->current_cap = $portfolio->current_cap - ($stock->purchase_price * $stock->shares);
+			$portfolio->current_cap = $portfolio->current_cap - $portfolio->commision;
+		}else{
+			$portfolio->current_cap = $portfolio->current_cap - ($stock->purchase_price * $stock->shares);
+		}
+		
 		$portfolio->last_trade = $stock->id;
 		$portfolio->save();
 		redirect('portfolios/view/'.$stock->portfolio_id);

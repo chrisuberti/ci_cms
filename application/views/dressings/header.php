@@ -13,7 +13,7 @@ $charts = 0;
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Bootstrap Admin Theme</title>
+    <title>Paper Trading</title>
 
     <!-- Bootstrap Core CSS -->
     <link href=<?php echo asset_url()."bower_components/bootstrap/dist/css/bootstrap.min.css";?> rel="stylesheet">
@@ -32,6 +32,8 @@ $charts = 0;
 
     <!-- Custom Fonts -->
     <link href=<?php echo asset_url()."bower_components/font-awesome/css/font-awesome.min.css";?> rel="stylesheet" type="text/css">
+    <!-- Site specific Style sheet -->
+    <link href=<?php echo asset_url()."css/main.css";?> rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
