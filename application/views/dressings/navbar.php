@@ -37,17 +37,7 @@
                     <ul class="nav" id="side-menu">
                         <li>
                            <a href="#"><i class = "fa fa-dashboard fa-fw"></i>Portfolios<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <?php $portfolios= $this->portfolio->find_all();?>
-                                <li>
-                                    <?php echo anchor('portfolios', 'View All');?>
-                                </li>
-                                <?php foreach($portfolios as $portfolio):?>
-                                <li>
-                                    <?php echo anchor('portfolios/view'.$portfolio->id, $portfolio->portfolio_name);?>
-                                </li>
-                                <?php endforeach;?>
-                            </ul>
+                            
                             <li>
                                 <?php echo anchor('auth/index', '<i class = "fa fa-users fa-fw"></i>Users'); ?>
                             </li>
