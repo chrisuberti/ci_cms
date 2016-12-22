@@ -9,6 +9,8 @@ class Post extends MY_Model{
     public $id;
     public $title;
     public $content;
+    public $date;
+    public $author; 
     
     
     public function __construct(){
