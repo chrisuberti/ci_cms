@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-class Post extends MY_Model{
+class Posts extends MY_Model{
     const DB_TABLE = 'posts';
     const DB_TABLE_PK = 'id';
     
@@ -10,12 +10,19 @@ class Post extends MY_Model{
     public $title;
     public $content;
     public $date;
-    public $author; 
+    //public $author; 
     
     
     public function __construct(){
         parent::__construct();
        
     }
-}
-
+     function add_new_entry($name, $body){
+         $data = array(
+             'title' => $name,
+             'content' => $body,
+             'date' => date('Y-m-d')
+             );
+        $this->db->insert('entry', $data);
+     }
+ }
