@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Post extends MY_Controller{
+class Blog extends MY_Controller{
 
 	function __construct(){
 	    parent::__construct();
@@ -28,7 +28,7 @@ class Post extends MY_Controller{
 			$body= $this->input->post('entry_body');
 			$this->blog_model->add_new_entry($name, $body);
 			$this->session->set_flashdata('message', '1 New Entry Added!');
-			redirect('post/add_new_entry');
+			redirect('blog/add_new_entry');
 		}
 	}
 		public function post($id){
@@ -59,7 +59,7 @@ class Post extends MY_Controller{
 					
 					$this->posts->add_new_comment($id, $name, $email, $comment);
 					$this->session->set_flashdata('message', '1 new comment added!');
-					redirect('post/', $id);
+					redirect('blog/', $id);
 				}
 			}else{
 				show_404();
