@@ -23,6 +23,37 @@ class Posts extends MY_Model{
              'content' => $body,
              'date' => date('Y-m-d')
              );
-        $this->db->insert('entry', $data);
+        $this->db->insert('DB_TABLE', $data);
+     }
+     function add_new_comment($id, $commentor, $email, $comment){
+         $data = array(
+             'id'=>$id,
+             'comment_name' => $commentor,
+             'comment_email' => $email,
+             'comment_body' => $comment);
+             $this->db->insert('comment', $data);
+     }
+     
+     function get_post($id){
+         //$post = Post::find_by_id($id);
+         $this->db->where('id', $id);
+         $query = $this->db->get('posts');
+         if($query->num_rows()!==0){
+             return $query->result();
+         }else{
+             return FALSE;
+         }
+     }
+     
+     function get_post_comments($id){
+         $this->db->where('entry_id', $id);
+         $query = $this->db->get('comment');
+         return $query->result();
+     }
+     function total_comments($id){
+         $this->db->like('entry_id', $id);
+         $this->db->from('comment');
+         return $this->db->count_all_results();
+
      }
  }

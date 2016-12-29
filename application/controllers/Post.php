@@ -28,9 +28,44 @@ class Post extends MY_Controller{
 			$body= $this->input->post('entry_body');
 			$this->blog_model->add_new_entry($name, $body);
 			$this->session->set_flashdata('message', '1 New Entry Added!');
-			redirect('blog/add_new_entry');
+			redirect('post/add_new_entry');
+		}
+	}
+		public function post($id){
+			$data['query']=$this->posts->get_post($id);
+			$data['comments']=$this->posts->get_post_comments($id);
+			$data['post_id']=$id;
+			$data['total_comments']=$this->posts->total_comments($id);
+			
+			$this->load->helper('form');
+			$this->load->library(array('form_validation', 'session'));
+			
+			$this->form_validation->set_rules('commentor', 'Name', 'required');
+			$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+			$this->form_validation->set_rules('comment', 'Comment', 'required');
+			
+			if($this->posts->get_post($id)){
+				foreach($this->posts->get_post($id) as $row){
+					$data['title']=$row->title;
+					$data['content'] = $row->content;
+				}
+				if($this->form_validation->run() == FALSE){
+					$this->load->view('blog/post', $data);
+				}else{
+					$name= $this->input->post('commentor');
+					$email = strtolower($this->input->post('email'));
+					$comment = $this->input->post('comment');
+					$post_id = $this->input->post('id');
+					
+					$this->posts->add_new_comment($id, $name, $email, $comment);
+					$this->session->set_flashdata('message', '1 new comment added!');
+					redirect('post/', $id);
+				}
+			}else{
+				show_404();
+			}
+			
 		}
 		
 		
 	}
-}
