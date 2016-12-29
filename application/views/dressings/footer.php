@@ -10,15 +10,12 @@
 
     <!-- Morris Charts JavaScript -->
     <script src='<?php echo asset_url()."bower_components/raphael/raphael-min.js";?>'></script>
-    <?php if($charts === TRUE):?>
-        <script src='<?php echo asset_url()."bower_components/morrisjs/morris.min.js";?>'></script>
-        <script src='<?php echo asset_url()."js/morris-data.js";?>'></script>
-    <?php endif;?>
+
     
         <!-- DataTables JavaScript -->
-        <script src='<?php echo asset_url()."bower_components/datatables/media/js/jquery.dataTables.min.js";?>'></script>
-        <script src='<?php echo asset_url()."bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js";?>'></script>
-    
+    <script src='<?php echo asset_url()."bower_components/datatables/media/js/jquery.dataTables.min.js";?>'></script>
+    <script src='<?php echo asset_url()."bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js";?>'></script>
+
         
 
     <!-- Custom Theme JavaScript -->

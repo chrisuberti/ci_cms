@@ -1,6 +1,3 @@
-<?php 
-$charts = 0;
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +10,7 @@ $charts = 0;
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Paper Trading</title>
+    <title>SB Admin 2 - Bootstrap Admin Theme</title>
 
     <!-- Bootstrap Core CSS -->
     <link href=<?php echo asset_url()."bower_components/bootstrap/dist/css/bootstrap.min.css";?> rel="stylesheet">
@@ -32,8 +29,6 @@ $charts = 0;
 
     <!-- Custom Fonts -->
     <link href=<?php echo asset_url()."bower_components/font-awesome/css/font-awesome.min.css";?> rel="stylesheet" type="text/css">
-    <!-- Site specific Style sheet -->
-    <link href=<?php echo asset_url()."css/main.css";?> rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,11 +37,8 @@ $charts = 0;
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
 </head>
 
 <body>
     
-    
-    <div class = "wrapper">
-
-        

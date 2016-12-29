@@ -6,7 +6,7 @@ class Auth extends CI_Controller {
 		parent::__construct();
 		$this->load->database();
 		$this->load->library(array('ion_auth','form_validation'));
-		$this->load->helper(array('url','language'));
+		$this->load->helper(array('url','language', 'general'));
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
 
@@ -681,8 +681,9 @@ class Auth extends CI_Controller {
 			'id'   => 'password_confirm',
 			'type' => 'password'
 		);
-
+		$this->load->view('dressings/header');
 		$this->_render_page('auth/edit_user', $this->data);
+		$this->load->view('dressings/footer');
 	}
 
 	// create a new group

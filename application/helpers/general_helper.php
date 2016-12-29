@@ -1,7 +1,9 @@
   <?php
 
 //General set of custom functions to be used for this project helper fiel
+function asset_url(){return base_url().'assets/';}
 
+function img_url(){return base_url().'assets/imgs/';}
 
    function  pretty_date ( $date_in )  {
         if (strlen ($date_in) != 19)
@@ -49,10 +51,3 @@ function percentage($value){
     return round((float)$value * 100, 3) . '%';
 }
 
-function asset_url(){
-    return base_url().'assets/';
-}
-
-function img_url(){
-    return base_url().'assets/imgs/';
-}
