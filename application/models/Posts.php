@@ -79,22 +79,17 @@ class Posts extends MY_Model{
 		return $query->result();
 	}
 	function get_category_post($slug){
-	    $list_post=array();
-	    
-	    $this->db->where('slug', $slug);
-	    $query = $this->db->get('categories');
-	    if($query->num_rows()==0){
+	    $cat = Categories::find_by('slug', $slug);
+	    $relations = Post_category_relations::find_by('category_id', $cat->id);
+
+	    if(count($relations)==0){
 	        show_404();
 	    }
-	    foreach($query->result() as $category){
-	        $this->db->where('category_id', $category->category_id);
-	        $query = $this->db->get('entry_relationship');
-	        $psots=$query->result();
-	    }
-	    if(isset($posts)&&$posts){
-	        foreach($posts as $post){
-	            $list_post = array_merge($list_post, $this->get_post($post->object_id));
+	    if(isset($relations)&&$relations){
+	        foreach($relations as $relation){
+	            $list_post[] = Posts::find_by_id($relation->post_id);
 	        }
+	        //$list_post=array_shift($list_post);
 	    }
 	    return $list_post;
 	}

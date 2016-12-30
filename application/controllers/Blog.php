@@ -116,6 +116,19 @@ class Blog extends MY_Controller{
         $cats = Categories::find_by('post_id', $post_id);
         return $cats;
     }
+    public function category($slug=FALSE){
+    	$data['title'] = 'Category - '.$this->config->item('site_title', 'ion_auth');
+		$data['categories'] = Categories::find_all();
+		
+		if($slug==FALSE){
+			show_404();
+		}else{
+			$data['category']=Categories::find_by('slug', $slug);
+			$data['query']= $this->posts->get_category_post($slug);
+		}
+		
+		$this->load->view('blog/category', $data);
+    }
 
 	
 }
