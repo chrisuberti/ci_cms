@@ -17,11 +17,13 @@ class Posts extends MY_Model{
         parent::__construct();
        
     }
-     function add_new_entry($name, $body){
+     function add_new_entry($user, $name, $body, $categories){
          $data = array(
              'title' => $name,
              'content' => $body,
              'date' => date('Y-m-d')
+             'author'=>$user,
+             'categories' => $categories
              );
         $this->db->insert('DB_TABLE', $data);
      }
@@ -72,4 +74,28 @@ class Posts extends MY_Model{
              $i=$i+1; $slug=$slug.'-'.$i;
          }
      }
+     function get_categories(){
+		$query = $this->db->get('entry_category');
+		return $query->result();
+	}
+	function get_category_post($slug){
+	    $list_post()=array();
+	    
+	    $this->db->where('slug', $slug);
+	    $query = $this->db->get('entry_category');
+	    if($query->num_rows()==0){
+	        show_404();
+	    }
+	    foreach($query->result() as $category){
+	        $this->db->where('category_id', $category->category_id);
+	        $query = $this->db->get('entry_relationship');
+	        $psots=$query->result();
+	    }
+	    if(isset($posts)&&$posts){
+	        foreach($posts as $post){
+	            $list_post = array_merge($list_post, $this->get_post($post->object_id));
+	        }
+	    }
+	    return $list_post;
+	}
  }

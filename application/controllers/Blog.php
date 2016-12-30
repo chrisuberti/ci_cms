@@ -17,20 +17,31 @@ class Blog extends MY_Controller{
 		
 	}
 	public function add_new_entry(){
-		$this->form_validation->set_rules('entry_name', 'Title', 'required|xss_clean|max_length[200]');
-		$this->form_validation->set_rules('entry_body', 'Body', 'required|xss_clean');
-		
-		if ($this->form_validation->run()==FALSE){
-			//not valid
-			$this->load->view('blog/add_new_entry');
-		}else{
-			$name = $this->input->post('entry_name');
-			$body= $this->input->post('entry_body');
-			$this->blog_model->add_new_entry($name, $body);
-			$this->session->set_flashdata('message', '1 New Entry Added!');
-			redirect('blog/add_new_entry');
+		if (!$this->ion_auth->logged_in()){redirect('auth/login', 'refresh');}
+		else{
+			$data['title']='Add new entry - '.$this->config->item('site_title', 'ion_auth');
+			$data['categories']=$this->posts->get_categories();
+			// redirect them to the home page because they must be an administrator to view this
+			$this->form_validation->set_rules('entry_name', 'Title', 'required|xss_clean|max_length[200]');
+			$this->form_validation->set_rules('entry_body', 'Body', 'required|xss_clean');
+			$this->form_validation->set_rules('entry_category', 'Category', 'required|xss_clean');
+			
+			if ($this->form_validation->run()==FALSE){
+				//not valid
+				$this->load->view('blog/add_new_entry', $data);
+			}else{//form validation works
+				$user = $this->ion_auth->user()->row();
+				$name = $this->input->post('entry_name');
+				$body= $this->input->post('entry_body');
+				$categories = $this->input->post('entry_category');
+				
+				$this->posts->add_new_entry($user->id, $name, $body, $categories);
+				$this->session->set_flashdata('message', '1 New Entry Added!');
+				redirect('blog/add_new_entry');
+			}
 		}
 	}
+	
 		public function post($id){
 			$data['query']=$this->posts->get_post($id);
 			$data['comments']=$this->posts->get_post_comments($id);
@@ -97,9 +108,6 @@ class Blog extends MY_Controller{
 			}
 		}
 	}
-	public function get_categories(){
-		$query = $this->db->get('entry_category');
-		return $query->result();
-	}
+
 	
 }
