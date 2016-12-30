@@ -56,4 +56,20 @@ class Posts extends MY_Model{
          return $this->db->count_all_results();
 
      }
+     function add_new_category($name, $slug){
+         $i=0;
+         $slug_taken=FALSE;
+         
+         while($slug_taken == FALSE){
+             $category = $this->get_category(NULL, $slug);
+             if($category == FALSE){
+                 $slug_taken = TRUE;
+                 $data = array(
+                     'category_ name'=>$name, 
+                     'slug'=>$slug);
+                     $this->db->insert('entry_category', $data);
+             }
+             $i=$i+1; $slug=$slug.'-'.$i;
+         }
+     }
  }

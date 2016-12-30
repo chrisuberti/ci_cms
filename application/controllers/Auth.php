@@ -15,7 +15,7 @@ class Auth extends CI_Controller {
 
 	// redirect if needed, otherwise display the user list
 	function index(){
-
+		$data['title'] = 'Dashboard - '. $this->config->item('site_title', 'ion_auth');
 		if (!$this->ion_auth->logged_in())
 		{
 			// redirect them to the login page
