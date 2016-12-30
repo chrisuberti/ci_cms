@@ -11,10 +11,12 @@
     <?php  if($query): foreach($query as $post):    ?>
     <h2><a href="<?php echo base_url().'post/'.$post->id;?>"><?php echo $post->title;?></a></h2>
     <p class="post-date"><?php echo pretty_date($post->date);?></p>
-    <!--<p class="post-info">Posted by: <a href="#"><?php// $author = $this->ion_auth->user($post->author_id)->row(); echo ucfirst($author->username);?></a>
-    | Filed under <?php// $item = $this->blog_model->get_related_categories($post->entry_id); 
-   // foreach($item as $category): ?><a href="<?php //echo base_url().'category/'.$category->slug;?>"><?php// echo $category->category_name;?></a> <?php //endforeach;?></p> --!>
-    -->
+    <p class="post-info">Posted by: <a href="#"><?php $author = $this->ion_auth->user($post->author_id)->row(); echo ucfirst($author->username);?></a>
+    | Filed under <?php $item = $this->post_category_relations->find_by('post_id', $post->id); 
+    foreach($item as $cat): ?>
+    <?php $category = Categories::find_by_id($cat->category_id);?>
+    <a href="<?php echo base_url().'category/'.$category->slug;?>"><?php echo $category->category_name;?></a> <?php endforeach;?></p>
+    
     <?php echo $post->content; ?>
     <hr>
     <p class="postmeta">

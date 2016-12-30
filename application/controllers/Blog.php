@@ -5,14 +5,18 @@ class Blog extends MY_Controller{
 	function __construct(){
 	    parent::__construct();
 		$this->load->library(array('form_validation', 'table'));
-		$this->load->model('posts');
+		$this->load->model(array('posts', 'categories', 'post_category_relations'));
 		$this->load->helper('general');
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
         }
         
        
 	public function index(){
+		$data['title']='Home - '. $this->config->item('site_title', 'ion_auth');
+		$data['current']='HOME';
+		
 		$data['query']=$this->posts->find_all();
+		$data['categories']=$this->posts->get_categories();
 		$this->load->view('blog/index',$data);
 		
 	}
@@ -108,6 +112,10 @@ class Blog extends MY_Controller{
 			}
 		}
 	}
+	public function get_post_cats($post_id){
+        $cats = Categories::find_by('post_id', $post_id);
+        return $cats;
+    }
 
 	
 }

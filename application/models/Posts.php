@@ -10,7 +10,7 @@ class Posts extends MY_Model{
     public $title;
     public $content;
     public $date;
-    //public $author; 
+    public $author_id; 
     
     
     public function __construct(){
@@ -21,8 +21,8 @@ class Posts extends MY_Model{
          $data = array(
              'title' => $name,
              'content' => $body,
-             'date' => date('Y-m-d')
-             'author'=>$user,
+             'date' => date('Y-m-d'),
+             'author_id'=>$user,
              'categories' => $categories
              );
         $this->db->insert('DB_TABLE', $data);
@@ -48,13 +48,13 @@ class Posts extends MY_Model{
      }
      
      function get_post_comments($id){
-         $this->db->where('entry_id', $id);
-         $query = $this->db->get('comment');
+         $this->db->where('post_id', $id);
+         $query = $this->db->get('comments');
          return $query->result();
      }
      function total_comments($id){
-         $this->db->like('entry_id', $id);
-         $this->db->from('comment');
+         $this->db->like('post_id', $id);
+         $this->db->from('comments');
          return $this->db->count_all_results();
 
      }
@@ -67,22 +67,22 @@ class Posts extends MY_Model{
              if($category == FALSE){
                  $slug_taken = TRUE;
                  $data = array(
-                     'category_ name'=>$name, 
+                     'category_name'=>$name, 
                      'slug'=>$slug);
-                     $this->db->insert('entry_category', $data);
+                     $this->db->insert('categories', $data);
              }
              $i=$i+1; $slug=$slug.'-'.$i;
          }
      }
      function get_categories(){
-		$query = $this->db->get('entry_category');
+		$query = $this->db->get('categories');
 		return $query->result();
 	}
 	function get_category_post($slug){
-	    $list_post()=array();
+	    $list_post=array();
 	    
 	    $this->db->where('slug', $slug);
-	    $query = $this->db->get('entry_category');
+	    $query = $this->db->get('categories');
 	    if($query->num_rows()==0){
 	        show_404();
 	    }
