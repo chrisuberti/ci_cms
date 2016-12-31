@@ -1,5 +1,3 @@
-     
-114 lines (93 sloc)  5.82 KB
 	<div id="footer-wrapper">
 	
 		<!-- column-one -->

@@ -1,3 +1,4 @@
+
 <?php $this->load->view('blog/header');?>
 <body>
 
@@ -9,12 +10,11 @@
 	
 		<!-- column-one -->
 		<div id="content"><div class="col-one">
-			<h2>Category: <a href="<?php echo base_url().'category/'.$category->slug;?>"><?php echo ucwords($category->category_name);?></a> (<?php echo count($query);?>)</h2>
+			<h2>Author: <?php echo $full_name;?> (<?php echo count($posts);?> Posts)</h2>
 
-			<?php if( isset($query) && $query ): ?>
+			<?php if( isset($posts) && $posts ): ?>
 			<ul>
-			
-			<?php foreach($query as $post):?>
+			<?php foreach($posts as $post):?>
 				<li><a href="<?php echo base_url().'post/'.$post->id;?>"><?php echo $post->title?></a></li>
 			<?php endforeach; ?>
 			</ul>

@@ -86,8 +86,12 @@ class Posts extends MY_Model{
 	        show_404();
 	    }
 	    if(isset($relations)&&$relations){
-	        foreach($relations as $relation){
-	            $list_post[] = Posts::find_by_id($relation->post_id);
+	        if(!is_array($relations)){
+	            $list_post = array(Posts::find_by_id($relations->post_id));
+	        }else{
+	            foreach($relations as $relation){
+	                $list_post[] = Posts::find_by_id($relation->post_id);
+	            }   
 	        }
 	        //$list_post=array_shift($list_post);
 	    }

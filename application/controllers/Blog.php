@@ -121,13 +121,31 @@ class Blog extends MY_Controller{
 		$data['categories'] = Categories::find_all();
 		
 		if($slug==FALSE){
-			show_404();
+			redirect('blog/add_new_category');
 		}else{
 			$data['category']=Categories::find_by('slug', $slug);
 			$data['query']= $this->posts->get_category_post($slug);
 		}
 		
 		$this->load->view('blog/category', $data);
+    }
+    
+    public function author($id=FALSE){
+    	if($id==FALSE){
+			redirect('blog');
+		}else{
+			$user =$this->ion_auth->user($id)->row();
+			$data['title'] = 'Category - '.$this->config->item('site_title', 'ion_auth');
+			$data['user'] = $user->username;
+			$data['full_name']=ucwords($user->first_name. ' '.$user->last_name);
+			$posts=Posts::find_by('author_id', $id);
+			if(!is_array($posts)){$data['posts'] = array($posts);
+			}else{$data['posts']=$posts;
+				
+			}
+		}
+		
+		$this->load->view('blog/author', $data);
     }
 
 	

@@ -12,7 +12,7 @@
     <h2><a href="<?php echo base_url().'post/'.$post->id;?>"><?php echo $post->title;?></a></h2>
         <p class="post-date"><?php echo pretty_date($post->date);?></p>
         
-        <p class="post-info">Posted by: <a href="#"><?php $author = $this->ion_auth->user($post->author_id)->row(); echo ucfirst($author->username);?></a>
+        <p class="post-info">Posted by: <a href="<?php echo base_url().'blog/author/'. $post->author_id;?>"><?php $author = $this->ion_auth->user($post->author_id)->row(); echo ucfirst($author->username);?></a>
         | Filed under <?php $item = $this->post_category_relations->find_by('post_id', $post->id); 
        
         foreach($item as $cat): ?>
