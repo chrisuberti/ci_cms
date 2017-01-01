@@ -1,10 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-</head>
-<body>
+<?php $this->load->view('blog/header');?>
     <h2>This is the blog</h2>
     <?php //$this->load->view('blog/menu');?>
     <?php  if($query):foreach($query as $post):?>

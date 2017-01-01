@@ -58,6 +58,8 @@ class Posts extends MY_Model{
          return $this->db->count_all_results();
 
      }
+     
+     
      function add_new_category($name, $slug){
          $i=0;
          $slug_taken=FALSE;
@@ -74,16 +76,20 @@ class Posts extends MY_Model{
              $i=$i+1; $slug=$slug.'-'.$i;
          }
      }
-     function get_categories(){
+     
+     
+    function get_categories(){
 		$query = $this->db->get('categories');
 		return $query->result();
 	}
+	
+	
 	function get_category_post($slug){
 	    $cat = Categories::find_by('slug', $slug);
 	    $relations = Post_category_relations::find_by('category_id', $cat->id);
 
 	    if(count($relations)==0){
-	        show_404();
+	        return false;
 	    }
 	    if(isset($relations)&&$relations){
 	        if(!is_array($relations)){

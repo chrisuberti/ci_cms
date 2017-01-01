@@ -13,3 +13,6 @@
 <meta name="googlebot" content="noarchive" />
 
 </head>
+
+<body>
+    <?php $this->load->view('blog/navbar');?>

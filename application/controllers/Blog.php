@@ -82,38 +82,46 @@ class Blog extends MY_Controller{
 			
 		}
 		
-		public function add_new_category(){
+	public function add_new_category($action=NULL, $id = NULL){
+
+		$data['title']='Add new category - '. $this->config->item('site_title', 'ion_auth');
+		if (!$this->ion_auth->logged_in()){
+			// redirect them to the login page
+			redirect('auth/login', 'refresh');
 			
-			$data['title']='Add new category - '. $this->config->item('site_title', 'ion_auth');
-			if (!$this->ion_auth->logged_in()){
-				// redirect them to the login page
-				redirect('auth/login', 'refresh');
+		}elseif ($this->ion_auth->is_admin()){ // remove this elseif if you want to enable this for non-admins
+			$data['categories']=Categories::find_all();
+			if($action == 'delete'){
+				$del_cat = Categories::find_by_id($id);
+				$del_cat->delete();
+				redirect('blog/add_new_category', $data);
 			}
-	
-			elseif (!$this->ion_auth->is_admin()){ // remove this elseif if you want to enable this for non-admins
-					echo "hello world";
-				$this->form_validation->set_rules('category_name', 'Name', 'required|max_length[200]|xss_clean');
-				$this->form_validation->set_rules('category_slug', 'Slug', 'max_length[200]|xss_clean');
-				
-				if($this->form_validation->run() == FALSE){
-					//non valid category was attempted
-					$this->load->view('auth/blog/add_new_category', $data);
-				}else{
-					$name=$this->input->post('category_name');
-					$slug = strtolower(preg_replace('/[^A-Za-z0-9_-]+/', '-', $name));
-					
-					
-					$this->posts->add_new_category($name, $slug);
-					$this->session->set_flashdata('message', '1 new comment added');
-					redirect('blog/add-new-category');
-	 
-				}
+			
+			$this->form_validation->set_rules('category_name', 'Name', 'required|max_length[200]');
+			$this->form_validation->set_rules('category_slug', 'Slug', 'max_length[200]');
+			
+			
+			
+			if($this->form_validation->run() == FALSE){
+				//non valid category was attempted
+				$this->load->view('auth/blog/add_new_category', $data);
+			}else{
+				$category = new Categories;
+				$category->category_name=$this->input->post('category_name');
+				$category->slug = strtolower(preg_replace('/[^A-Za-z0-9_-]+/', '-', $category->category_name));
+				$category->save();
+				$this->session->set_flashdata('message', $category->category_name. ' category created');
+				redirect('blog/add_new_category', $data);
+ 
 			}
+		}
 	}
 	public function get_post_cats($post_id){
         $cats = Categories::find_by('post_id', $post_id);
         return $cats;
     }
+    
+    
     public function category($slug=FALSE){
     	$data['title'] = 'Category - '.$this->config->item('site_title', 'ion_auth');
 		$data['categories'] = Categories::find_all();
@@ -122,11 +130,12 @@ class Blog extends MY_Controller{
 			redirect('blog/add_new_category');
 		}else{
 			$data['category']=Categories::find_by('slug', $slug);
+			
 			$data['query']= $this->posts->get_category_post($slug);
 		}
-		
 		$this->load->view('blog/category', $data);
     }
+    
     
     public function author($id=FALSE){
     	if($id==FALSE){
