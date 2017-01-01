@@ -91,6 +91,9 @@ class Blog extends MY_Controller{
 			
 		}elseif ($this->ion_auth->is_admin()){ // remove this elseif if you want to enable this for non-admins
 			$data['categories']=Categories::find_all();
+			
+			
+			
 			if($action == 'delete'){
 				$del_cat = Categories::find_by_id($id);
 				$del_cat->delete();
@@ -105,6 +108,8 @@ class Blog extends MY_Controller{
 			if($this->form_validation->run() == FALSE){
 				//non valid category was attempted
 				$this->load->view('auth/blog/add_new_category', $data);
+				
+				
 			}else{
 				$category = new Categories;
 				$category->category_name=$this->input->post('category_name');
@@ -128,11 +133,14 @@ class Blog extends MY_Controller{
 		
 		if($slug==FALSE){
 			redirect('blog/add_new_category');
+			
+			
 		}else{
 			$data['category']=Categories::find_by('slug', $slug);
-			
 			$data['query']= $this->posts->get_category_post($slug);
 		}
+		
+		
 		$this->load->view('blog/category', $data);
     }
     
