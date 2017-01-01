@@ -1,11 +1,28 @@
-<?php echo form_open('add_new_category');?>
-    <p><label>Category Name</label>
-    <input type="text" name="category_name" size="30" /></p>
- 
-    <p><label>Slug</label>
-    <input type="text" name="category_slug" size="30" /></p>
-  <br>
-  
-  <input class="button" type="submit" value = "Submit"/>
-  <input class="button" type="reset" value = "Reset"/>
-  
+<?php $this->load->view('blog/header');?>
+<body>
+    <div id="content-outer" class ="clear"><div id="content-wrapper">
+        <div id="content"><div class="col-one">
+            <h2>Add New Category</h2>
+            <?php form_open('add-new-category');?>
+            <?php 
+            if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
+            <?php if($this->session->flashdata('message')){echo '<p class="success">'.$this->session->flashdata('message').'</p>';}?>
+            
+            <p><label for="">Category Name</label>
+            <input type="text" name="category_name"size="30"/></p>
+            <br>
+            <input class = "button" type="submit" Value="Submit"/>
+            <input class = "button" type="reset" Value="Reset"/>
+            </div></div>
+    </div></div>
+    
+</body>
+<?php $this->load->view('blog/footer');?>
+
+
+<h2>Instillation: </h2>
+<ul>
+    <li>1. Clone</li>
+    <li>2. create DB and upload sql file included in repo</li>
+    <li>3. Login with admin@admin.com and 'password'</li>
+</ul>

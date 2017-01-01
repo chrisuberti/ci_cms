@@ -83,34 +83,32 @@ class Blog extends MY_Controller{
 		}
 		
 		public function add_new_category(){
-			$data['title']='Add new category - '. $this->config->item('site_title', 'ion_auth');
-			if (!$this->ion_auth->logged_in())
-		{
-			// redirect them to the login page
-			redirect('auth/login', 'refresh');
-		}
-		elseif (!$this->ion_auth->is_admin()) // remove this elseif if you want to enable this for non-admins
-		{
-			$this->form_validation->set_rules('category_name', 'Name', 'required|max_length[200]|xss_clean');
-			$this->form_validation->set_rules('category_slug', 'Slug', 'max_length[200]|xss_clean');
 			
-			if($this->form_validation->run() == FALSE){
-				//non valid category was attempted
-				$this->load->view('auth/blog/add_new_category', $data);
-			}else{
-				$name=$this->input->post('category_name');
-				if( $this->input->post('category_slug') != '' ){
-					$slug = $this->input->post('category_slug');
-				}else{
-					$slug = strtolower(preg_replace('/[^A-Za-z0-9_-]+/', '-', $name));
-				}
-				
-				$this->posts->add_new_category($name, $slug);
-				$this->session->set_flashdata('message', '1 new comment added');
-				redirect('blog/add-new-category');
- 
+			$data['title']='Add new category - '. $this->config->item('site_title', 'ion_auth');
+			if (!$this->ion_auth->logged_in()){
+				// redirect them to the login page
+				redirect('auth/login', 'refresh');
 			}
-		}
+	
+			elseif (!$this->ion_auth->is_admin()){ // remove this elseif if you want to enable this for non-admins
+					echo "hello world";
+				$this->form_validation->set_rules('category_name', 'Name', 'required|max_length[200]|xss_clean');
+				$this->form_validation->set_rules('category_slug', 'Slug', 'max_length[200]|xss_clean');
+				
+				if($this->form_validation->run() == FALSE){
+					//non valid category was attempted
+					$this->load->view('auth/blog/add_new_category', $data);
+				}else{
+					$name=$this->input->post('category_name');
+					$slug = strtolower(preg_replace('/[^A-Za-z0-9_-]+/', '-', $name));
+					
+					
+					$this->posts->add_new_category($name, $slug);
+					$this->session->set_flashdata('message', '1 new comment added');
+					redirect('blog/add-new-category');
+	 
+				}
+			}
 	}
 	public function get_post_cats($post_id){
         $cats = Categories::find_by('post_id', $post_id);
