@@ -10,7 +10,7 @@
 			<h3>Admin Menu</h3>
 			<ul class="sidemenu">
 				<li><a href="<?php echo base_url().'auth/';?>">Dashboard</a></li>
-				<li><a href="<?php echo base_url().'add_new_entry';?>">Add new entry</a></li>
+				<li><a href="<?php echo base_url().'add_post';?>">Add new post</a></li>
 				<li><a href="<?php echo base_url().'add_new_category';?>">Add new category</a></li>
 				<li><a href="<?php echo base_url().'auth/logout';?>">Logout</a></li>
 			<?php endif; ?>

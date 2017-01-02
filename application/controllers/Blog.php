@@ -20,29 +20,47 @@ class Blog extends MY_Controller{
 		$this->load->view('blog/index',$data);
 		
 	}
-	public function add_new_entry(){
-		if (!$this->ion_auth->logged_in()){redirect('auth/login', 'refresh');}
-		else{
-			$data['title']='Add new entry - '.$this->config->item('site_title', 'ion_auth');
-			$data['categories']=$this->posts->get_categories();
-			// redirect them to the home page because they must be an administrator to view this
-			$this->form_validation->set_rules('entry_name', 'Title', 'required|xss_clean|max_length[200]');
-			$this->form_validation->set_rules('entry_body', 'Body', 'required|xss_clean');
-			$this->form_validation->set_rules('entry_category', 'Category', 'required|xss_clean');
-			
-			if ($this->form_validation->run()==FALSE){
-				//not valid
-				$this->load->view('blog/add_new_entry', $data);
-			}else{//form validation works
-				$user = $this->ion_auth->user()->row();
-				$name = $this->input->post('entry_name');
-				$body= $this->input->post('entry_body');
-				$categories = $this->input->post('entry_category');
-				
-				$this->posts->add_new_entry($user->id, $name, $body, $categories);
-				$this->session->set_flashdata('message', '1 New Entry Added!');
-				redirect('blog/add_new_entry');
-			}
+	public function add_post(){
+		if (!$this->ion_auth->logged_in()){
+			redirect('auth/login', 'refresh');
+			}else{
+				if(isset($_POST)){	
+					$data['title']='Add new entry - '.$this->config->item('site_title', 'ion_auth');
+					$cats = Categories::find_all();
+					
+					//$categories = array();
+					foreach($cats as $category){
+						$categories[$category->id] = $category->category_name;
+					}
+					
+					$data['categories']= $categories;
+					// redirect them to the home page because they must be an administrator to view this
+					$this->form_validation->set_rules('title', 'Title', 'required|max_length[200]');
+					$this->form_validation->set_rules('content', 'Body', 'required');
+					$this->form_validation->set_rules('post_cats[]', 'Category', 'required');
+					
+					if ($this->form_validation->run()==FALSE){
+						//not valid
+						$this->load->view('auth/blog/add_post', $data);
+					}else{//form validation works
+						$post = new Posts;
+						$post->author_id = $this->ion_auth->user()->row();
+						$post->title = $this->input->post('title');
+						$post->content= $this->input->post('content');
+						$post->save();
+						
+						$categories = $this->input->post('post_cats');
+						preprint($categories);
+						foreach ($categories as $cat){
+							$cat_relation = new Post_category_relations;
+							$cat_relation->post_id = $post->id;
+							$cat_relation->category_id = $cat;
+							$cat_relation->save();
+						}
+						$this->session->set_flashdata('message', '1 New Entry Added!');
+						redirect('blog');
+					}
+				}
 		}
 	}
 	
@@ -113,7 +131,7 @@ class Blog extends MY_Controller{
 			}else{
 				$category = new Categories;
 				$category->category_name=$this->input->post('category_name');
-				$category->slug = strtolower(preg_replace('/[^A-Za-z0-9_-]+/', '-', $category->category_name));
+				$category->slug = url_title($category->category_name);
 				$category->save();
 				$this->session->set_flashdata('message', $category->category_name. ' category created');
 				redirect('blog/add_new_category', $data);

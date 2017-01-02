@@ -12,7 +12,6 @@
 <meta name="robots" content="index, follow, noarchive" />
 <meta name="googlebot" content="noarchive" />
 
-</head>
 
 <body>
     <?php $this->load->view('blog/navbar');?>

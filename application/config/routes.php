@@ -57,4 +57,4 @@ $route['new-post']='blog/add_new_entry';
 $route['post/(:num)'] = 'blog/post/$1';
 $route['category/(:any)']='blog/category/$1';
 $route['category']='blog/category';
-$route['add_new_category']='blog/add_new_category';
+$route['add_post']='blog/add_post';
