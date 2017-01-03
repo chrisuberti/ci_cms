@@ -18,19 +18,19 @@
             if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
             <?php if($this->session->flashdata('message')){echo '<p class="success">'.$this->session->flashdata('message').'</p>';}?>
          
-            <?php echo form_open('add_post');?>
+            <?php echo form_open('blog/edit_post/'.$id);?>
             <p><strong>Title</strong>:<br />
-			<input type="text" name="title" size="60" value = "<?php if(isset($temp_title)){echo $temp_title;}?>" /></p>
+			<input type="text" name="post_title" size="60" value = "<?php echo $post_title?>" /></p>
             <br clear="all" />
             
             <p><strong>Body</strong>: (HTML mode)</p>
-            <textarea rows="6" cols="80%" name="content" style="resize:none;" value ="<?php if(isset($temp_content)){echo $temp_content;}?>"></textarea>
+            <textarea rows="6" cols="80%" name="content" style="resize:none;" value =""><?php echo $content;?></textarea>
             
             
             <br clear="all" />
-            <?php echo form_multiselect('post_cats[]', $categories, $temp_cats);?>
+            <?php echo form_multiselect('post_cats[]', $categories, $sel_cats);?>
             
-            <p><input type="submit" value="Submit" /></p>
+            <p><input type="submit" value="Update" /></p>
             <?php echo form_close(); ?>
             
             <hr />

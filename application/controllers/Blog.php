@@ -24,7 +24,7 @@ class Blog extends MY_Controller{
 		if (!$this->ion_auth->logged_in()){
 			redirect('auth/login', 'refresh');
 			}else{
-				if(isset($_POST)){	
+				if(!empty($_POST)){	
 					$data['title']='Add new entry - '.$this->config->item('site_title', 'ion_auth');
 					$cats = Categories::find_all();
 					
@@ -69,16 +69,15 @@ class Blog extends MY_Controller{
 				}
 		}
 	}
-		public function edit_post($post_id = NULL){
+		public function edit_post($post_id){
 		if (!$this->ion_auth->logged_in()){
 			redirect('auth/login', 'refresh');
 			}else{
 				$data['title']='Edit post - '.$this->config->item('site_title', 'ion_auth');
-				if(isset($_POST)){	
-				
-				
+				$post = Posts::find_by_id($post_id);
+				if(!empty($_POST)){
 					// redirect them to the home page because they must be an administrator to view this
-					$this->form_validation->set_rules('title', 'Title', 'required|max_length[200]');
+					$this->form_validation->set_rules('post_title', 'Title', 'required|max_length[200]');
 					$this->form_validation->set_rules('content', 'Body', 'required');
 					$this->form_validation->set_rules('post_cats[]', 'Category', 'required');
 					
@@ -88,26 +87,40 @@ class Blog extends MY_Controller{
 						$temp_cats = $this->input->post('post_cats[]');
 						if(!isset($temp_cats)){$temp_cats=array();};
 						$data['temp_cats'] = $temp_cats;
-						$this->load->view('auth/blog/edit_post/'.$post_id, $data);
+						$this->load->view('auth/blog/edit_post', $data);
 					}else{//form validation works
-						$post = new Posts;
-						$post->author_id = $this->ion_auth->user()->row();
-						$post->title = $this->input->post('title');
+						$post->title = $this->input->post('post_title');
 						$post->content= $this->input->post('content');
 						$post->save();
 						
 						$categories = $this->input->post('post_cats');
-						preprint($categories);
+						
 						foreach ($categories as $cat){
 							$cat_relation = new Post_category_relations;
 							$cat_relation->post_id = $post->id;
 							$cat_relation->category_id = $cat;
 							$cat_relation->save();
 						}
-						$this->session->set_flashdata('message', '1 New Entry Added!');
-						redirect('blog');
+						$this->session->set_flashdata('message', 'Post Updated Fool');
+						redirect('edit_post/'.$post_id);
 					}
 				}
+				
+				//render page initially
+				$data['id']=$post_id;
+				$data['post_title']=$post->title; 
+				$data['content']=$post->content;
+				$cats = Categories::find_all();
+				foreach($cats as $category){
+					$categories[$category->id] = $category->category_name;
+				}
+				$data['categories']= $categories;
+				$sel_cats=Post_category_relations::find_by('post_id', $post_id);
+				foreach($sel_cats as $sel_cat){
+					$selected_categories[]=$sel_cat->category_id;
+				}
+				$data['sel_cats']=$selected_categories;
+				$this->load->view('auth/blog/edit_post', $data);
 		}
 	}
 	
