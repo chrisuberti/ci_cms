@@ -20,11 +20,11 @@
          
             <?php echo form_open('add_post');?>
             <p><strong>Title</strong>:<br />
-			<input type="text" name="title" size="60" value = "<?php echo set_value('title')?>" /></p>
+			<input type="text" name="title" size="60" value = "<?php if(isset($temp_title)){echo $temp_title;}?>" /></p>
             <br clear="all" />
             
             <p><strong>Body</strong>: (HTML mode)</p>
-            <textarea rows="6" cols="80%" name="content" style="resize:none;" value =""><?php echo set_value('content');?></textarea>
+            <textarea rows="6" cols="80%" name="content" style="resize:none;" value ="<?php if(isset($temp_content)){echo $temp_content;}?>"></textarea>
             
             
             <br clear="all" />

@@ -41,7 +41,54 @@ class Blog extends MY_Controller{
 					
 					if ($this->form_validation->run()==FALSE){
 						//not valid
+						$data['temp_title'] = $this->input->post('title');
+						$data['temp_content']= $this->input->post('content');
+							
+						$temp_cats = $this->input->post('post_cats[]');
+						if(!isset($temp_cats)){$temp_cats=array();};
+						$data['temp_cats'] = $temp_cats;
 						$this->load->view('auth/blog/add_post', $data);
+					}else{//form validation works
+						$post = new Posts;
+						$post->author_id = $this->ion_auth->user()->row();
+						$post->title = $this->input->post('title');
+						$post->content= $this->input->post('content');
+						$post->save();
+						
+						$categories = $this->input->post('post_cats');
+						preprint($categories);
+						foreach ($categories as $cat){
+							$cat_relation = new Post_category_relations;
+							$cat_relation->post_id = $post->id;
+							$cat_relation->category_id = $cat;
+							$cat_relation->save();
+						}
+						$this->session->set_flashdata('message', '1 New Entry Added!');
+						redirect('blog');
+					}
+				}
+		}
+	}
+		public function edit_post($post_id = NULL){
+		if (!$this->ion_auth->logged_in()){
+			redirect('auth/login', 'refresh');
+			}else{
+				$data['title']='Edit post - '.$this->config->item('site_title', 'ion_auth');
+				if(isset($_POST)){	
+				
+				
+					// redirect them to the home page because they must be an administrator to view this
+					$this->form_validation->set_rules('title', 'Title', 'required|max_length[200]');
+					$this->form_validation->set_rules('content', 'Body', 'required');
+					$this->form_validation->set_rules('post_cats[]', 'Category', 'required');
+					
+					if ($this->form_validation->run()==FALSE){
+						//not valid
+					
+						$temp_cats = $this->input->post('post_cats[]');
+						if(!isset($temp_cats)){$temp_cats=array();};
+						$data['temp_cats'] = $temp_cats;
+						$this->load->view('auth/blog/edit_post/'.$post_id, $data);
 					}else{//form validation works
 						$post = new Posts;
 						$post->author_id = $this->ion_auth->user()->row();
