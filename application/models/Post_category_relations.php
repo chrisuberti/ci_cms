@@ -13,6 +13,14 @@ class Post_category_relations extends MY_Model{
     public function __construct(){
         parent::__construct();
     }
+    
+     public function post_category_list($id){
+        $sel_cats = self::find_by('post_id', $id);
+        foreach($sel_cats as $sel_cat){
+			$selected_categories[]=$sel_cat->category_id;
+		}
+		return $selected_categories;
+    }
 }
 
     

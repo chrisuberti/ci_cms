@@ -16,7 +16,7 @@ class Blog extends MY_Controller{
 		$data['current']='HOME';
 		
 		$data['query']=Posts::find_all();
-		$data['categories']=Categories::find_all();
+		$data['categories']=$this->categories->find_all();
 		$this->load->view('blog/index',$data);
 		
 	}
@@ -27,7 +27,7 @@ class Blog extends MY_Controller{
 		$data['current']='HOME';
 		
 		$data['query']=Posts::find_all();
-		$data['categories']=Categories::find_all();
+		$data['categories']=$this->categories->find_all();
 		$this->load->view('auth/blog/index',$data);
 		
 	}
@@ -40,7 +40,7 @@ class Blog extends MY_Controller{
 			}else{
 				if(!empty($_POST)){	
 					$data['title']='Add new entry - '.$this->config->item('site_title', 'ion_auth');
-					$cats = Categories::find_all();
+					$cats = $this->categories->find_all();
 					
 					//$categories = array();
 					foreach($cats as $category){
@@ -124,23 +124,17 @@ class Blog extends MY_Controller{
 				$data['id']=$post_id;
 				$data['post_title']=$post->title; 
 				$data['content']=$post->content;
-				$cats = Categories::find_all();
-				foreach($cats as $category){
-					$categories[$category->id] = $category->category_name;
-				}
-				$data['categories']= $categories;
-				$sel_cats=Post_category_relations::find_by('post_id', $post_id);
-				foreach($sel_cats as $sel_cat){
-					$selected_categories[]=$sel_cat->category_id;
-				}
-				$data['sel_cats']=$selected_categories;
+				$data['categories']= $this->categories->list_all_cats();
+				$data['sel_cats']=$this->post_category_relations->post_category_list($post_id);
+				
+				
 				$this->load->view('auth/blog/edit_post', $data);
 		}
 	}
 	
 		public function post($id){
-			$data['post']=Posts::find_by_id($id);
-			$data['comments']=$this->posts->get_post_comments($id);
+			$data['post']=$this->posts->find_by_id($id);
+			$data['comments']=$this->comments->find_by('post_id', $id);
 			$data['post_id']=$id;
 			$data['total_comments']=$this->posts->total_comments($id);
 			
@@ -183,13 +177,12 @@ class Blog extends MY_Controller{
 			redirect('auth/login', 'refresh');
 			
 		}elseif ($this->ion_auth->is_admin()){ // remove this elseif if you want to enable this for non-admins
-			$data['categories']=Categories::find_all();
+			$data['categories']=$this->categories->find_all();
 			
 			
 			
 			if($action == 'delete'){
-				$del_cat = Categories::find_by_id($id);
-				$del_cat->delete();
+				$del_cat = $this->categories->find_by_id($id)->delete_cat();
 				redirect('blog/add_new_category', $data);
 			}
 			
@@ -215,21 +208,21 @@ class Blog extends MY_Controller{
 		}
 	}
 	public function get_post_cats($post_id){
-        $cats = Categories::find_by('post_id', $post_id);
+        $cats = $this->categories->find_by('post_id', $post_id);
         return $cats;
     }
     
     
     public function category($slug=FALSE){
     	$data['title'] = 'Category - '.$this->config->item('site_title', 'ion_auth');
-		$data['categories'] = Categories::find_all();
+		$data['categories'] = $this->categories->find_all();
 		
 		if($slug==FALSE){
 			redirect('blog/add_new_category');
 			
 			
 		}else{
-			$data['category']=Categories::find_by('slug', $slug);
+			$data['category']=$this->categories->find_by('slug', $slug);
 			$data['query']= $this->posts->get_category_post($slug);
 		}
 		
