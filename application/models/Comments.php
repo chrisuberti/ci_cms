@@ -13,6 +13,7 @@ class Comments extends MY_Model{
     public $comment_body;
     public $comment_date;
     
-    public funciton __construct(){
+    public function __construct(){
         parent::__construct();
     }
+}

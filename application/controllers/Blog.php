@@ -5,7 +5,7 @@ class Blog extends MY_Controller{
 	function __construct(){
 	    parent::__construct();
 		$this->load->library(array('form_validation', 'table'));
-		$this->load->model(array('posts', 'categories', 'post_category_relations'));
+		$this->load->model(array('posts', 'categories', 'post_category_relations', 'comments'));
 		$this->load->helper('general');
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
         }
@@ -15,11 +15,25 @@ class Blog extends MY_Controller{
 		$data['title']='Home - '. $this->config->item('site_title', 'ion_auth');
 		$data['current']='HOME';
 		
-		$data['query']=$this->posts->find_all();
-		$data['categories']=$this->posts->get_categories();
+		$data['query']=Posts::find_all();
+		$data['categories']=Categories::find_all();
 		$this->load->view('blog/index',$data);
 		
 	}
+	
+	
+	public function admin_dash(){
+		$data['title']='Home - '. $this->config->item('site_title', 'ion_auth');
+		$data['current']='HOME';
+		
+		$data['query']=Posts::find_all();
+		$data['categories']=Categories::find_all();
+		$this->load->view('auth/blog/index',$data);
+		
+	}
+	
+	
+	
 	public function add_post(){
 		if (!$this->ion_auth->logged_in()){
 			redirect('auth/login', 'refresh');
@@ -125,7 +139,7 @@ class Blog extends MY_Controller{
 	}
 	
 		public function post($id){
-			$data['query']=$this->posts->get_post($id);
+			$data['post']=Posts::find_by_id($id);
 			$data['comments']=$this->posts->get_post_comments($id);
 			$data['post_id']=$id;
 			$data['total_comments']=$this->posts->total_comments($id);
@@ -145,14 +159,15 @@ class Blog extends MY_Controller{
 				if($this->form_validation->run() == FALSE){
 					$this->load->view('blog/post', $data);
 				}else{
-					$name= $this->input->post('commentor');
-					$email = strtolower($this->input->post('email'));
-					$comment = $this->input->post('comment');
-					$post_id = $this->input->post('id');
+					$comment = new Comments;
+					$comment->comment_name= $this->input->post('commentor');
+					$comment->comment_email = strtolower($this->input->post('email'));
+					$comment->comment_body = $this->input->post('comment');
+					$comment->post_id = $data['post']->id;
 					
-					$this->posts->add_new_comment($id, $name, $email, $comment);
+					$comment->save();
 					$this->session->set_flashdata('message', '1 new comment added!');
-					redirect('blog/', $id);
+					redirect('blog/post/'. $data['post']->id);
 				}
 			}else{
 				show_404();
@@ -239,6 +254,23 @@ class Blog extends MY_Controller{
 		}
 		
 		$this->load->view('blog/author', $data);
+    }
+    
+    public function delete_comment($id=NULL){
+    	if($id==NULL){
+    		redirect('blog');
+		}else{
+			$comment = Comments::find_by('comment_id', $id);
+			$post_id = $comment->post_id;
+			if($comment){
+				$comment->delete();
+				redirect('blog/post/'.$post_id);
+			}else{
+				$this->session->set_flashdata('Sorry, could not find comment');
+				redirect('blog/post/'.$post_id);
+				
+			}
+    	}
     }
 
 	

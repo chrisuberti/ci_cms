@@ -9,7 +9,8 @@
 			<?php else: ?>
 			<h3>Admin Menu</h3>
 			<ul class="sidemenu">
-				<li><a href="<?php echo base_url().'auth/';?>">Dashboard</a></li>
+				<li><a href="<?php echo base_url().'blog/admin_dash';?>">Dashboard</a></li>
+				<li><a href="<?php echo base_url().'blog';?>">View Blog</a></li>
 				<li><a href="<?php echo base_url().'add_post';?>">Add new post</a></li>
 				<li><a href="<?php echo base_url().'add_new_category';?>">Add new category</a></li>
 				<li><a href="<?php echo base_url().'auth/logout';?>">Logout</a></li>

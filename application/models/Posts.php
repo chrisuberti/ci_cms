@@ -17,24 +17,7 @@ class Posts extends MY_Model{
         parent::__construct();
        
     }
-     function add_new_entry($user, $name, $body, $categories){
-         $data = array(
-             'title' => $name,
-             'content' => $body,
-             'date' => date('Y-m-d'),
-             'author_id'=>$user,
-             'categories' => $categories
-             );
-        $this->db->insert('DB_TABLE', $data);
-     }
-     function add_new_comment($id, $commentor, $email, $comment){
-         $data = array(
-             'id'=>$id,
-             'comment_name' => $commentor,
-             'comment_email' => $email,
-             'comment_body' => $comment);
-             $this->db->insert('comment', $data);
-     }
+
      
      function get_post($id){
          //$post = Post::find_by_id($id);
