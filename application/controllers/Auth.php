@@ -846,5 +846,9 @@ class Auth extends CI_Controller {
 		}
 		
 	}
+	
+	public function full_name(){
+		return ucwords($this->first_name. ' '.$this->last_name);
+	}
 
 }

@@ -2228,6 +2228,13 @@ class Ion_auth_model extends CI_Model
 
 		return TRUE;
 	}
+	
+	
+	
+	
+	public function full_name(){
+		return ucwords($this->row()->first_name. ' '.$this->row()->last_name);
+	}
 
 
 

@@ -26,7 +26,37 @@ class Blog extends MY_Controller{
 		$data['title']='Home - '. $this->config->item('site_title', 'ion_auth');
 		$data['current']='HOME';
 		
-		$data['query']=Posts::find_all();
+		$query=$this->posts->find_all();
+		$data['query']=$query;
+		$this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
+	    	$this->table->set_heading('Post', 'Author', 'Categories', 'Comments', 'Date Published');
+	    	if($query){
+	    	    foreach($query as $post){
+	    	    	
+	    	        $user = $this->ion_auth->user($post->author_id);
+	    	        $author = $user->full_name();
+	    	        
+	    	        $post_title = anchor('blog/edit_post/'.$post->id, $post->title);
+	    	        $post_categories = $this->post_category_relations->cat_name_list($post->id);
+	    	        $category_list = "";
+	    	        
+	    	        
+	    	        if(!empty($post_categories)){
+		    	        foreach($post_categories as $slug=>$category){
+		    	        	$category_list .= anchor('blog/category/'.$slug, $category). ", ";
+		    	        }
+	    	        }
+	    	        
+	    	        
+	    	        $num_comms = count(Comments::find_by('post_id', $post->id));
+	    	        $this->table->add_row($post_title, $author,$category_list, $num_comms, pretty_date($post->date));
+	    	    }
+	    	
+	    	$data['post_table']= $this->table->generate();
+	    	}
+		
+		
+		
 		$data['categories']=$this->categories->find_all();
 		$this->load->view('auth/blog/index',$data);
 		
@@ -83,6 +113,14 @@ class Blog extends MY_Controller{
 				}
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 		public function edit_post($post_id){
 		if (!$this->ion_auth->logged_in()){
 			redirect('auth/login', 'refresh');
@@ -132,6 +170,15 @@ class Blog extends MY_Controller{
 		}
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 		public function post($id){
 			$data['post']=$this->posts->find_by_id($id);
 			$data['comments']=$this->comments->find_by('post_id', $id);
@@ -168,6 +215,12 @@ class Blog extends MY_Controller{
 			}
 			
 		}
+		
+		
+		
+		
+		
+		
 		
 	public function add_new_category($action=NULL, $id = NULL){
 
@@ -207,10 +260,21 @@ class Blog extends MY_Controller{
 			}
 		}
 	}
+	
+	
+	
+	
+	
+	
 	public function get_post_cats($post_id){
         $cats = $this->categories->find_by('post_id', $post_id);
         return $cats;
     }
+    
+    
+    
+    
+    
     
     
     public function category($slug=FALSE){
@@ -248,6 +312,10 @@ class Blog extends MY_Controller{
 		
 		$this->load->view('blog/author', $data);
     }
+    
+    
+    
+    
     
     public function delete_comment($id=NULL){
     	if($id==NULL){

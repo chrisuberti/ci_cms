@@ -45,4 +45,4 @@
 </body>
 	
 
-        <?php $this->load->view('auth/dressings/footer');?>
+        <?php $this->load->view('auth/dressings;/footer');?>
