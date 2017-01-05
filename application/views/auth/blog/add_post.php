@@ -1,5 +1,5 @@
-<?php $this->load->view('dressings/header');?>
-<?php $this->load->view('dressings/navbar');?>
+<?php $this->load->view('auth/dressings/header');?>
+<?php $this->load->view('auth/dressings/navbar');?>
 
 <!-- Added these scripts to beautify textarea's-->
 
@@ -40,4 +40,4 @@
 </body>
 	
 
-        <?php $this->load->view('blog/footer');?>
+        <?php $this->load->view('auth/dressings/footer');?>

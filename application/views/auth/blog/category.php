@@ -1,16 +1,14 @@
-<?php $this->load->view('blog/header');?>
-<body>
+<?php $this->load->view('auth/dressings/header');?>
+<?php $this->load->view('auth/dressings/navbar');?>
 
-	<!-- header top starts-->
-	<?php $this->load->view('blog/menu_top');?>
-	<!-- header top ends here -->
-	
-	<!-- content starts -->
-	<div id="content-outer" class="clear"><div id="content-wrapper">
-	
-		<!-- column-one -->
-		<div id="content"><div class="col-one">
-			
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class = "page-header"><?php echo lang('index_heading');?></h1>
+            <p><?php echo lang('index_subheading');?></p>
+        </div>
+        
+        
 			<?php foreach($category as $row):?>
 			<h2><a href="<?php echo base_url().'category/'.$row->slug;?>"><?php echo ucwords($row->category_name);?></a> (<?php echo count($query);?>)</h2>
 			<?php endforeach;?>
@@ -38,7 +36,7 @@
 	</div></div>
 
 	<!-- footer starts here -->	
-	<?php $this->load->view('blog/footer');?>
+	<?php $this->load->view('auth/dressings/footer');?>
 	<!-- footer ends here -->
 
 </body>

@@ -37,10 +37,10 @@ class Auth extends CI_Controller {
 			{
 				$this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
 			}
-			$this->load->view('dressings/header');
-			$this->load->view('dressings/navbar');
+			$this->load->view('auth/dressings/header');
+			$this->load->view('auth/dressings/navbar');
 			$this->_render_page('auth/index', $this->data);
-			$this->load->view('dressings/footer');
+			$this->load->view('auth/dressings/footer');
 		}
 	}
 
@@ -93,9 +93,9 @@ class Auth extends CI_Controller {
 				'type' => 'password',
 				'class'=>'form-control',
 			);
-			$this->load->view('dressings/header_login');
+			$this->load->view('auth/dressings/header_login');
 			$this->_render_page('auth/login', $this->data);
-			$this->load->view('dressings/footer');
+			$this->load->view('auth/dressings/footer');
 		}
 	}
 
@@ -681,9 +681,9 @@ class Auth extends CI_Controller {
 			'id'   => 'password_confirm',
 			'type' => 'password'
 		);
-		$this->load->view('dressings/header');
+		$this->load->view('auth/dressings/header');
 		$this->_render_page('auth/edit_user', $this->data);
-		$this->load->view('dressings/footer');
+		$this->load->view('auth/dressings/footer');
 	}
 
 	// create a new group

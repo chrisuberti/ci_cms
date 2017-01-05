@@ -1,5 +1,5 @@
-<?php $this->load->view('dressings/header');?>
-<?php $this->load->view('dressings/navbar');?>
+<?php $this->load->view('auth/dressings/header');?>
+<?php $this->load->view('auth/dressings/navbar');?>
 
 <!-- Added these scripts to beautify textarea's-->
 
@@ -32,6 +32,11 @@
             
             <p><input type="submit" value="Update" /></p>
             <?php echo form_close(); ?>
+            <hr>
+            <h4>Comments:</h4>
+            <div>
+                
+            </div>
             
             <hr />
         </div><!-- Close content -->
@@ -40,4 +45,4 @@
 </body>
 	
 
-        <?php $this->load->view('blog/footer');?>
+        <?php $this->load->view('auth/dressings/footer');?>

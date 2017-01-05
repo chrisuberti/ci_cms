@@ -1,5 +1,5 @@
-<?php $this->load->view('dressings/header');?>
-<?php $this->load->view('dressings/navbar');?>
+<?php $this->load->view('auth/dressings/header');?>
+<?php $this->load->view('auth/dressings/navbar');?>
 
 <div id="page-wrapper">
     <div class="row">
@@ -12,18 +12,28 @@
     <table>
         <?php 
             $this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
-	    	$this->table->set_heading('Post', 'Author', 'Categories', 'Comments');
+	    	$this->table->set_heading('Post', 'Author', 'Categories', 'Comments', 'Date Published');
 	    	if($query){
 	    	    foreach($query as $post){
 	    	        $author = $this->ion_auth->user($post->author_id)->row();
-	    	        $cat_relation = Post_category_relation::find_by('post_id', $post->id);
+	    	        $cat_relation = Post_category_relations::find_by('post_id', $post->id);
+	    	        $post_title = $post->title;
+	    	        $author_name = "Chris";
+	    	        if($cat_relation){
+	    	            preprint($cat_relation);
 	    	        foreach($cat_relation as $relate){
-	    	            $categories[]=Categories
+	    	            $sel_cats[]="blah";
 	    	        }
+	    	        }
+	    	        echo 'These are categories:';
+	    	        
 	    	        $num_comms = count(Comments::find_by('post_id', $post->id));
-	    	        $this->table->add_row($post_title, $author_name, $comments, pretty_date($post->date));
+	    	        $this->table->add_row($post_title, $author_name,$categories, $num_comms, pretty_date($post->date));
 	    	    }
+	    	
+	    	echo $this->table->generate();
 	    	}
+	    	
 	    	?>
     </table>
     <?php //$this->load->view('blog/menu');?>
