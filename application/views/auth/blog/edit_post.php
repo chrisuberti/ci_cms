@@ -35,8 +35,22 @@
             <hr>
             <h4>Comments:</h4>
             <div>
-                
+            <?php if($comments): foreach($comments as $com):?>
+                <div class="comment">
+                    <div>
+                        <strong><?php echo ucwords($com->comment_name);?> (on <?php echo pretty_date($com->comment_date);?>):</strong>
+                    </div>
+                    <div><?php echo $com->comment_body; ?></div>
+                    <div>
+                        <?php if ($this->ion_auth->is_admin()){
+                        echo form_open('blog/delete_comment/'.$com->comment_id);
+                        echo form_submit('delete', 'Delete Comment');
+                        echo form_close();
+                        }?>
+                    </div>
+                </div>
             </div>
+             <?php endforeach; endif;?>
             
             <hr />
         </div><!-- Close content -->
@@ -44,5 +58,4 @@
 
 </body>
 	
-
-        <?php $this->load->view('auth/dressings;/footer');?>
+<?php $this->load->view('auth/dressings/footer');?>

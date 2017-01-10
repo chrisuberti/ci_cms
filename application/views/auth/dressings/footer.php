@@ -1,4 +1,9 @@
 
+    
+      <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+      <script>tinymce.init({ selector:'textarea' });</script>
+
+    
     <!-- jQuery -->
     <script src='<?php echo asset_url()."bower_components/jquery/dist/jquery.min.js";?>'></script>
 

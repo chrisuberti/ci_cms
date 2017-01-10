@@ -7,16 +7,22 @@
             <h1 class = "page-header"><?php echo lang('index_heading');?></h1>
             <p><?php echo lang('index_subheading');?></p>
         </div>
-        
-        
-			<?php foreach($category as $row):?>
-			<h2><a href="<?php echo base_url().'category/'.$row->slug;?>"><?php echo ucwords($row->category_name);?></a> (<?php echo count($query);?>)</h2>
-			<?php endforeach;?>
+        	<h3>Category: </h3>
+			<?php if(is_array($category)): foreach($category as $row):?>
+				<h2><a href="<?php echo base_url().'category/'.$row->slug;?>"><?php echo ucwords($row->category_name);?></a> (Posts: <?php echo count($query);?>)</h2>
+				<?php endforeach;?>
+			<?php else: ?>
+			<?php $row = $category;?>
+			<h2><a href="<?php echo base_url().'category/'.$row->slug;?>"><?php echo ucwords($row->category_name);?></a> (Posts: <?php echo count($query);?>)</h2>
+			<?php endif;?>
+			<?php echo form_open('blog/add_new_category/delete/'.$row->id).form_submit('submit', 'Delete').form_close();?>
 			
+			<hr>
+			<h4>Related Posts:</h4>
 			<?php if( isset($query) && $query ): ?>
 			<ul>
 			<?php foreach($query as $post):?>
-				<li><a href="<?php echo base_url().'post/'.$post->entry_id;?>"><?php echo $post->entry_name?></a></li>
+				<li><?php echo $post->title?> -- <a href="<?php echo base_url().'post/'.$post->id;?>">Edit</a></li>
 			<?php endforeach; ?>
 			</ul>
 				

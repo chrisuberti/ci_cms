@@ -9,6 +9,7 @@
         </div>
         
     <h2>Manage blog posts:</h2>
+    <h4><?php echo anchor('blog/add_post', '+Add Post');?></h4>
     <table>
         <?php 
             

@@ -28,6 +28,9 @@ class Blog extends MY_Controller{
 		
 		$query=$this->posts->find_all();
 		$data['query']=$query;
+		
+		
+		// Create table of all posts:
 		$this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
 	    	$this->table->set_heading('Post', 'Author', 'Categories', 'Comments', 'Date Published');
 	    	if($query){
@@ -56,7 +59,7 @@ class Blog extends MY_Controller{
 	    	}
 		
 		
-		
+		//finding categories to list in navbar
 		$data['categories']=$this->categories->find_all();
 		$this->load->view('auth/blog/index',$data);
 		
@@ -164,6 +167,7 @@ class Blog extends MY_Controller{
 				$data['content']=$post->content;
 				$data['categories']= $this->categories->list_all_cats();
 				$data['sel_cats']=$this->post_category_relations->post_category_list($post_id);
+				$data['comments']=$this->comments->find_by('post_id', $post_id);
 				
 				
 				$this->load->view('auth/blog/edit_post', $data);
@@ -284,14 +288,16 @@ class Blog extends MY_Controller{
 		if($slug==FALSE){
 			redirect('blog/add_new_category');
 			
-			
 		}else{
 			$data['category']=$this->categories->find_by('slug', $slug);
 			$data['query']= $this->posts->get_category_post($slug);
 		}
 		
-		
-		$this->load->view('blog/category', $data);
+		if($this->ion_auth->is_admin()){
+			$this->load->view('auth/blog/category', $data);
+		}else{
+			$this->load->view('blog/category', $data);
+		}
     }
     
     
