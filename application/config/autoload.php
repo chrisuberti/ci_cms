@@ -126,4 +126,4 @@ $autoload['language'] = array();
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array('portfolio', 'ion_auth_model');
+$autoload['model'] = array('portfolio', 'ion_auth_model', 'posts', 'categories', 'post_category_relations', 'comments', 'images');

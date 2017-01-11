@@ -5,7 +5,7 @@ class Blog extends MY_Controller{
 	function __construct(){
 	    parent::__construct();
 		$this->load->library(array('form_validation', 'table'));
-		$this->load->model(array('posts', 'categories', 'post_category_relations', 'comments'));
+		$this->load->model(array());
 		$this->load->helper('general');
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
         }
@@ -30,33 +30,8 @@ class Blog extends MY_Controller{
 		$data['query']=$query;
 		
 		
-		// Create table of all posts:
-		$this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
-	    	$this->table->set_heading('Post', 'Author', 'Categories', 'Comments', 'Date Published');
-	    	if($query){
-	    	    foreach($query as $post){
-	    	    	
-	    	        $user = $this->ion_auth->user($post->author_id);
-	    	        $author = $user->full_name();
-	    	        
-	    	        $post_title = anchor('blog/edit_post/'.$post->id, $post->title);
-	    	        $post_categories = $this->post_category_relations->cat_name_list($post->id);
-	    	        $category_list = "";
-	    	        
-	    	        
-	    	        if(!empty($post_categories)){
-		    	        foreach($post_categories as $slug=>$category){
-		    	        	$category_list .= anchor('blog/category/'.$slug, $category). ", ";
-		    	        }
-	    	        }
-	    	        
-	    	        
-	    	        $num_comms = count(Comments::find_by('post_id', $post->id));
-	    	        $this->table->add_row($post_title, $author,$category_list, $num_comms, pretty_date($post->date));
-	    	    }
-	    	
-	    	$data['post_table']= $this->table->generate();
-	    	}
+
+	   	$data['post_table']=$this->posts->create_post_table();
 		
 		
 		//finding categories to list in navbar
@@ -196,8 +171,8 @@ class Blog extends MY_Controller{
 			$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
 			$this->form_validation->set_rules('comment', 'Comment', 'required');
 			
-			if($this->posts->get_post($id)){
-				foreach($this->posts->get_post($id) as $row){
+			if($this->posts->find_by_id($id)){
+				foreach($this->posts->find_by_id($id) as $row){
 					$data['title']=$row->title;
 					$data['content'] = $row->content;
 				}

@@ -19,52 +19,17 @@ class Posts extends MY_Model{
     }
 
      
-     function get_post($id){
-         //$post = Post::find_by_id($id);
-         $this->db->where('id', $id);
-         $query = $this->db->get('posts');
-         if($query->num_rows()!==0){
-             return $query->result();
-         }else{
-             return FALSE;
-         }
-     }
-     
-     function get_post_comments($id){
-         $this->db->where('post_id', $id);
-         $query = $this->db->get('comments');
-         return $query->result();
-     }
+
+
      function total_comments($id){
          $this->db->like('post_id', $id);
          $this->db->from('comments');
          return $this->db->count_all_results();
 
      }
-     
-     
-     function add_new_category($name, $slug){
-         $i=0;
-         $slug_taken=FALSE;
-         
-         while($slug_taken == FALSE){
-             $category = $this->get_category(NULL, $slug);
-             if($category == FALSE){
-                 $slug_taken = TRUE;
-                 $data = array(
-                     'category_name'=>$name, 
-                     'slug'=>$slug);
-                     $this->db->insert('categories', $data);
-             }
-             $i=$i+1; $slug=$slug.'-'.$i;
-         }
-     }
-     
-     
-    function get_categories(){
-		$query = $this->db->get('categories');
-		return $query->result();
-	}
+  
+  
+  
 	
 	
 	function get_category_post($slug){
@@ -86,4 +51,48 @@ class Posts extends MY_Model{
 	    }
 	    return $list_post;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	function create_post_table(){
+	    $query=$this->find_all();
+	
+		// Create table of all posts:
+		$this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
+	    $this->table->set_heading('Post', 'Author', 'Categories', 'Comments', 'Date Published');
+	    	if($query){
+	    	    foreach($query as $post){
+	    	    	
+	    	        $user = $this->ion_auth->user($post->author_id);
+	    	        $author = $user->full_name();
+	    	        
+	    	        $post_title = anchor('blog/edit_post/'.$post->id, $post->title);
+	    	        $post_categories = $this->post_category_relations->cat_name_list($post->id);
+	    	        $category_list = "";
+	    	        
+	    	        
+	    	        if(!empty($post_categories)){
+		    	        foreach($post_categories as $slug=>$category){
+		    	        	$category_list .= anchor('blog/category/'.$slug, $category). ", ";
+		    	        }
+	    	        }
+	    	        
+	    	        
+	    	        $num_comms = count(Comments::find_by('post_id', $post->id));
+	    	        $this->table->add_row($post_title, $author,$category_list, $num_comms, pretty_date($post->date));
+	    	    }
+	    	
+	    	$post_table= $this->table->generate();
+	    	return $post_table;
+	    	}
+	}
+	
+	
+	
  }
