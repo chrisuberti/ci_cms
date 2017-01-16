@@ -51,3 +51,34 @@ function percentage($value){
     return round((float)$value * 100, 3) . '%';
 }
 
+
+function sanitize_filename($string, $force_lowercase = true, $anal = false) {
+    $strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
+                   "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
+                   "â€”", "â€“", ",", "<", ".", ">", "/", "?");
+    $clean = trim(str_replace($strip, "", strip_tags($string)));
+    $clean = preg_replace('/\s+/', "-", $clean);
+    $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean ;
+    return ($force_lowercase) ?
+        (function_exists('mb_strtolower')) ?
+            mb_strtolower($clean, 'UTF-8') :
+            strtolower($clean) :
+        $clean;
+}
+
+function output_message($messages=""){
+	$return_str = "";
+	if (!empty($messages) && is_array($messages)) {
+		foreach ($messages as $message) {
+			$return_str .= "<p class \"message\">{$message}</p>";
+		} 
+		return $return_str;
+	}elseif(!empty($messages)){
+		return "<p class \"message\">{$messages}</p>";
+	}
+		return "";
+}
+	
+function makeDir($path){
+	return is_dir($path) || mkdir($path);
+}

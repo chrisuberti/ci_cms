@@ -59,7 +59,6 @@ class Posts extends MY_Model{
 	
 	
 	
-	
 	function create_post_table(){
 	    $query=$this->find_all();
 	

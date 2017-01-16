@@ -14,7 +14,7 @@
             <?php echo form_open('Blog/add_new_category');?>
             <?php 
             if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
-            <?php if($this->session->flashdata('message')){echo '<p class="success">'.$this->session->flashdata('message').'</p>';}?>
+            <?php echo output_message($this->session->flashdata('message'));?>
             
             <p><label for="">Category Name</label>
             <input type="text" name="category_name"size="30"/></p>

@@ -15,9 +15,10 @@
     <div id="content-outer" class ="clear"><div id="content-wrapper">
         <div id="content"><div class="col-one">
            
-            <form action="photo/add_photo" enctype="multipart/form-data" method="POST">
+            <form action="photo/add_photo" enctype="multipart/form-data" method="POST" runat="server">
             	<input type="hidden" name = "MAX_FILE_SIZE" value = <?php echo $max_file_size; ?>>
-            	<p><input type="file" name="file_upload" multiple = "multiple"></p>
+            	<p><input type="file" name="file_upload" multiple = "multiple" id="imgInp" style="width:20%;"></p>
+            	<img src="#" id ='upload_img'/>
             	<p>Album:
             	<select name="album_id">
             		<?php 
@@ -34,6 +35,8 @@
             	<p>Caption: <input type="text" name="caption" value=""></p>
             		<input type="submit" name="submit" value = "Upload">
             	</form>
+            	
+    </form>
             
     </div>
     </div>
@@ -41,5 +44,23 @@
     </div>
 </body>
 	
+<script type= "text/javascript">
+	  
+	 function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function (e) {
+                $('#upload_img').attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    $("#imgInp").change(function(){
+        readURL(this);
+    });
+</script>
 
         <?php $this->load->view('auth/dressings/footer');?>

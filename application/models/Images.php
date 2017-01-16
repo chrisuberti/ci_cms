@@ -40,28 +40,29 @@ class Images extends MY_Model{
 				
         }
     }
+
+
+
+
+
+	////////////////////////////////////////////////
+	public function attach_file($file){
+		if (!$file || empty($file) || !is_array($file)) {
+				$this->session->set_flashdata('message', 'No file found');
+			return false;	
+		} elseif ($file['error']!=0) {
+				$this->session->set_flashdata('message', $this->upload_errors[$file['error']]);
+			return false;
+		} else{
+			$this->temp_path 	= $file['tmp_name'];
+			$this->filename 	=basename($file['name']);
+			$this->type 		=$file['type'];
+			$this->size 	 	=$file['size'];
+			return true;
+		}
+
+	}
 }
-
-
-
-
-//	////////////////////////////////////////////////
-//	public function attach_file($file){
-//		if (!$file || empty($file) || !is_array($file)) {
-//			$this->errors[] = "No file was uploaded";
-//			return false;	
-//		} elseif ($file['error']!=0) {
-//			$this->errors[] = $this->upload_errors[$file['error']];
-//			return false;
-//		} else{
-//			$this->temp_path 	= $file['tmp_name'];
-//			$this->filename 	=basename($file['name']);
-//			$this->type 		=$file['type'];
-//			$this->size 	 	=$file['size'];
-//			return true;
-//		}
-//
-//	}
 //	public static function count_all(){
 //		$sql ="SELECT COUNT(*) FROM " .self::$table_name;
 //		$result_set = $database->query($sql);

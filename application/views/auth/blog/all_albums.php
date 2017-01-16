@@ -17,25 +17,10 @@
             <?php 
             if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
             <?php echo output_message($this->session->flashdata('message')); ?>
-         
-            <?php echo form_open('add_post');?>
-            <p><strong>Title</strong>:<br />
-			<input type="text" name="title" size="60" value = "<?php echo set_value('title')?>" /></p>
-            <br clear="all" />
-            
-            <p><strong>Body</strong>: (HTML mode)</p>
-            <textarea rows="6" cols="80%" name="content" style="resize:none;" value =""><?php echo set_value('content');?></textarea>
-            
-            
-            <br clear="all" />
-            <?php echo form_multiselect('post_cats[]', $categories, $temp_cats);?>
-            
-            <p><input type="submit" value="Submit" /></p>
-            <?php echo form_close(); ?>
-            
-            <hr />
-        </div><!-- Close content -->
+          </div><!-- Close content -->
         </div>
+    </div>
+</div>
 
 </body>
 	
