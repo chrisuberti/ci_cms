@@ -86,9 +86,39 @@
                         
                         
                         
+                        
+                        <li>
+                        <a href="#"><i class = "fa fa-picture-o fa-fw"></i>Albums<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <?php $albums= Albums::find_all();?>
+                                <li>
+                                    <?php echo anchor('photo/albums', 'View All');?>
+                                </li>
+                                <?php foreach($albums as $album):?>
+                                <li>
+                                    <?php echo anchor('photo/edit_album/'.$album->id, $album->album_title);?>
+                                </li>
+                                <?php endforeach;?>
+                            </ul>
+                        </li>
+                        <li>
+                        <a href="#"><i class = "fa fa-picture-o fa-fw"></i>Images<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <?php echo anchor('photo/all_imgs', 'View All');?>
+                                </li>
+                                <?php foreach($albums as $album):?>
+                                <li>
+                                    <?php echo anchor('photo/add_photo', 'Add Photo');?>
+                                </li>
+                                <?php endforeach;?>
+                            </ul>
+                        </li>
+                        
                         <li>
                             <?php echo anchor('auth/index', '<i class = "fa fa-users fa-fw"></i>Users'); ?>
                         </li>
+                        
                     
 
 

@@ -5,6 +5,7 @@ class Images extends MY_Model{
     const DB_TABLE = 'images';
     const DB_TABLE_PK = 'id'; //primary key
     
+    
     public $id;
  	public $filename;
  	public $title;
@@ -13,35 +14,6 @@ class Images extends MY_Model{
  	public $caption;
  	public $album_id;
  	public $visible;
-
-
- 	private $temp_path;
- 	//protected $upload_dir=base_url()."/img";
- 	public $errors = array();
-
- 	public $upload_errors=array(UPLOAD_ERR_OK => "No errors.", UPLOAD_ERR_INI_SIZE => "Larger than upload_max_filesize", UPLOAD_ERR_FORM_SIZE => "Larger than form MAX_FILE_SIZE", UPLOAD_ERR_PARTIAL => "Partial upload", UPLOAD_ERR_NO_FILE => "No file", UPLOAD_ERR_NO_TMP_DIR => "No temporary directory", UPLOAD_ERR_CANT_WRITE => "Cant write to disk", UPLOAD_ERR_EXTENSION => "File upload stopped by extension.");
-
-
-    public function add_photo(){
-        	if (!$this->ion_auth->logged_in()){
-			redirect('auth/login', 'refresh');
-			}else{
-				if(!empty($_POST)){	
-					$config['upload_path']          = './uploads/';
-                	$config['allowed_types']        = 'gif|jpg|png';
-                	$config['max_size']             = 100;
-                	$config['max_width']            = 1024;
-                	$config['max_height']           = 768;
-                	
-                	
-					$this->load->library('upload', $config);
-
-				}
-				
-        }
-    }
-
-
 
 
 
@@ -61,6 +33,30 @@ class Images extends MY_Model{
 			return true;
 		}
 
+	}
+	
+	public function image_path(){
+		if($album_dir=Albums::get_album_dir($this->album_id)){
+				return $album_dir;
+			}else {
+				return "";
+			}
+		//return $this->upload_dir.DS.$this->filename;
+
+	}
+	
+	
+	
+	public function size_as_text(){
+		if ($this->size < 1024) {
+			return "{$this->size} bytes";
+		}elseif ($this->size < 1048576) {
+			$size_kb = round($this->size/1024);
+			return "{$size_kb} KB";
+		}else {
+			$size_mb = round($this->size/1048576);
+			return "{$size_mb} MB";
+		}
 	}
 }
 //	public static function count_all(){
@@ -117,17 +113,7 @@ class Images extends MY_Model{
 //			}
 //		}
 //	}
-//	public function size_as_text(){
-//		if ($this->size < 1024) {
-//			return "{$this->size} bytes";
-//		}elseif ($this->size < 1048576) {
-//			$size_kb = round($this->size/1024);
-//			return "{$size_kb} KB";
-//		}else {
-//			$size_mb = round($this->size/1048576);
-//			return "{$size_mb} MB";
-//		}
-//	}
+
 //
 //	public function comments(){
 //		//this supposidly simplifies things

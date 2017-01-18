@@ -29,26 +29,94 @@ class Photo extends MY_Controller{
 			
 			}
         }
+
+        public function upload(){
+        	if(!empty($_POST)){
+        		
+        		$photo = new Images;
+				$photo->caption = $_POST['caption'];
+				$photo->title = $_POST['pic_title'];
+				$photo->album_id = $_POST['album_id'];
+				$photo->visible = $_POST['visible'];
+				
+        		
+        		
+	    	    $config['upload_path']          = "./uploads/".$photo->image_path();
+	            $config['allowed_types']        = 'gif|jpg|png';
+	            $config['max_size']             = 100;
+	            $config['max_width']            = 1024;
+	            $config['max_height']           = 768;
+	            $config['overwrite']			= TRUE;
+	            
+	            
+	            
+	            
+	            
+	            $this->upload->initialize($config);
+	            $data['error']=NULL;
+	            
+	           
+				
+				
+	            if(!$this->upload->do_upload('file_upload')){
+	            	$data['error']=$this->upload->display_errors();
+	            	
+	            	$this->load->view('auth/blog/upload_form', $data);
+	            }else{
+	            	$data['upload_data']=$this->upload->data();
+	            	$photo->filename = $this->upload->data('file_name');
+					$photo->type = $this->upload->data('image_type');
+					$photo->size = $this->upload->data('file_size')*1048576;
+					$photo->size = $photo->size_as_text();
+		            
+		            $data['photo']=$photo;
+	            	$photo->save();
+	            	$this->load->view('auth/blog/upload_form', $data);
+	            }
+        }else{
+        	$this->load->view('auth/blog/upload_form', array('error'=>''));
+        }
+    }
+        
+        
+        
+        
+
         public function add_photo(){
         	if (!$this->ion_auth->logged_in()){
 			redirect('auth/login', 'refresh');
 			}else{
+				$data['max_file_size'] = 20 * 1048576;
+        	
 				if(!empty($_POST)){	
+					$photo = new Images;
+					$photo->caption = $_POST['caption'];
+					$photo->attach_file($_FILES['file_upload']);
+					$photo->album_id = $_POST['album_id'];
+					$photo->visible = $_POST['visible'];
 					
-					$config['upload_path']          = './uploads/';
-                	$config['allowed_types']        = 'gif|jpg|png';
-                	$config['max_size']             = 100;
-                	$config['max_width']            = 1024;
-                	$config['max_height']           = 768;
-                	
-                	
-					$this->load->library('upload', $config);
+					$data['photo']=$photo;
+					if ($this->save_img()) {
+						//success
+						$session->message("photograph was successfully uploaded");
+						redirect_to('manage_photos.php');
+					}else{
+						//failure
+						$message = join("<br/>",$photo->errors);
+					}
 
+				}else{
+                	
+					$data['title']='Upload Photo - '.$this->config->item('site_title', 'ion_auth');
+					$this->load->view('auth/blog/photo_upload', $data);
+                	
+					
 				}
 				
         	}
         }
         
+
         public function albums(){
         	$data['albums']=$this->albums->find_all();
         	$data['title']='Photo Album Overview - '.$this->config->item('site_title', 'ion_auth');

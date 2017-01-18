@@ -54,28 +54,28 @@ class Albums extends MY_Model{
 	    	}
 	}
 
-//	public function create_album(){
-//		$path = base_url(). '/uploads/'$this->album_dir;
-//		if (is_dir($path)) {
-//			$this->errors[] = "Could not create directory";
-//			return false;
-//		}else{
-//			$this->create();
-//			mkdir($path);
-//			return true;
-//		}
-//	}
-//
-//	public static function get_album_dir($id=0){
-//		$album_row = static::find_by_id($id);
-//		if(is_object($album_row)){
-//			return $album_row->album_dir;
-//		}else{
-//			//$this->errors[] = "Directory does not exist";
-//
-//			return false;
-//		}
-//	}
+	public function create_album(){
+		$path = base_url(). '/uploads/'.$this->album_dir;
+		if (is_dir($path)) {
+			$this->errors[] = "Could not create directory";
+			return false;
+		}else{
+			$this->create();
+			mkdir($path);
+			return true;
+		}
+	}
+
+	public static function get_album_dir($id=0){
+		$album_row = static::find_by_id($id);
+		if(is_object($album_row)){
+			return $album_row->album_dir;
+		}else{
+			//$this->errors[] = "Directory does not exist";
+
+			return false;
+		}
+	}
 //
 //	public function find_all_album_photos(){
 //		return Photograph::find_by_album($this->id);
