@@ -29,8 +29,50 @@ class Photo extends MY_Controller{
 			
 			}
         }
+        
+        public function all_imgs(){
+        	if (!$this->ion_auth->logged_in()){
+				redirect('auth/login', 'refresh');
+			}else{
+				$data['title']='Manage Photos - '.$this->config->item('site_title', 'ion_auth');
+				$this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
+		    	$this->table->set_heading('Image','&nbsp', 'Album', 'Size', 'Date Published', '');
+		    	$images = $this->images->find_all();
+		    	if($images){
+		    		foreach($images as $photo){
+		    			$album = $this->albums->find_by_id($photo->album_id);
+		    			$title = $photo->title . "<br>".anchor('photo/edit/'.$photo->id, 'Edit');
+		    			
+		    			
+		    			$image_config = array(
+		    				'src'	=>	'uploads/'.$album->album_dir . '/'.$photo->filename,
+		    				'alt'	=>	$photo->caption,
+		    				'class'	=>	'admin_img',
+		    				'width'	=>	'10%',
+		    				'title'	=>	$photo->title);
+		    			$image = img($image_config);
+		    			
+		    			$album_name = $album->album_title;
+		    			$size = $photo->size;
+		    			$date_published = pretty_date($photo->pub_date);
+		    			$del_button = form_open('photo/del_img/'.$photo->id);
+		    			$del_button .= form_submit('del_img', 'Delete');
+		    			
+		    			$this->table->add_row($title, $image, $album->album_title, $size, $date_published, $del_button);
+		    		}
+		    		$data['image_table'] = $this->table->generate();
+		    	}else{
+		    		$data['image_table'] = anchor('photo/upload', 'No Images, add some!');
+		    	}
+		    $this->load->view('auth/blog/all_imgs', $data);	
+	   
+	        }
+        }
 
         public function upload(){
+        if (!$this->ion_auth->logged_in()){
+			redirect('auth/login', 'refresh');
+		}else{
         	if(!empty($_POST)){
         		
         		$photo = new Images;
@@ -77,6 +119,8 @@ class Photo extends MY_Controller{
         	$this->load->view('auth/blog/upload_form', array('error'=>''));
         }
     }
+        }
+
         
         
         

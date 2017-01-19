@@ -13,6 +13,7 @@ class Images extends MY_Model{
  	public $size;
  	public $caption;
  	public $album_id;
+ 	public $pub_date;
  	public $visible;
 
 
