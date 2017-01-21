@@ -45,7 +45,7 @@ class Photo extends MY_Controller{
 		    			
 		    			
 		    			$image_config = array(
-		    				'src'	=>	'uploads/'.$album->album_dir . '/'.$photo->filename,
+		    				'src'	=>	base_url(). 'uploads/'.$album->album_dir . '/'.$photo->filename,
 		    				'alt'	=>	$photo->caption,
 		    				'class'	=>	'admin_img',
 		    				'width'	=>	'10%',
