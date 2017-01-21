@@ -38,7 +38,7 @@ class Images extends MY_Model{
 	
 	public function image_path(){
 		if($album_dir=Albums::get_album_dir($this->album_id)){
-				return $album_dir;
+				return 'uploads/'. $album_dir.'/'.$this->filename;
 			}else {
 				return "";
 			}

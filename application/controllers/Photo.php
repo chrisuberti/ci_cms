@@ -45,15 +45,17 @@ class Photo extends MY_Controller{
 		    			
 		    			
 		    			$image_config = array(
-		    				'src'	=>	base_url(). 'uploads/'.$album->album_dir . '/'.$photo->filename,
+		    				//'src'	=>	'uploads/'.$album->album_dir . '/'.$photo->filename,
+		    				'src'	=>	$photo->image_path(),
 		    				'alt'	=>	$photo->caption,
 		    				'class'	=>	'admin_img',
 		    				'width'	=>	'10%',
 		    				'title'	=>	$photo->title);
-		    			$image = img($image_config);
+		    			$image = "<div>". img($image_config);
+		    			$image .= "</div>".$photo->caption;
 		    			
 		    			$album_name = $album->album_title;
-		    			$size = $photo->size;
+		    			$size = $photo->size_as_text();
 		    			$date_published = pretty_date($photo->pub_date);
 		    			$del_button = form_open('photo/del_img/'.$photo->id);
 		    			$del_button .= form_submit('del_img', 'Delete');
@@ -67,6 +69,10 @@ class Photo extends MY_Controller{
 		    $this->load->view('auth/blog/all_imgs', $data);	
 	   
 	        }
+        }
+        
+        public function del_img(){
+        	
         }
 
         public function upload(){
