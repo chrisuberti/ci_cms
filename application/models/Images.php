@@ -59,6 +59,17 @@ class Images extends MY_Model{
 			return "{$size_mb} MB";
 		}
 	}
+	public function destroy(){
+		//remove db entry
+		if ($this->delete()) {
+			return unlink($this->image_path())? true:false;
+		} else{
+			return false;
+		}
+		//remove the file
+
+	}
+
 }
 //	public static function count_all(){
 //		$sql ="SELECT COUNT(*) FROM " .self::$table_name;
@@ -146,13 +157,3 @@ class Images extends MY_Model{
 //
 //
 //
-//	public function destroy(){
-//		//remove db entry
-//		if ($this->delete()) {
-//			return unlink($this->image_path())? true:false;
-//		} else{
-//			return false;
-//		}
-//		//remove the file
-//
-//	}

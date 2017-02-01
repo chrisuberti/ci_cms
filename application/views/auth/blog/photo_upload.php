@@ -14,29 +14,38 @@
 
     <div id="content-outer" class ="clear"><div id="content-wrapper">
         <div id="content"><div class="col-one">
-           
-            <form action="photo/add_photo" enctype="multipart/form-data" method="POST" runat="server">
-            	<input type="hidden" name = "MAX_FILE_SIZE" value = <?php echo $max_file_size; ?>>
-            	<p><input type="file" name="file_upload" multiple = "multiple" id="imgInp" style="width:20%;"></p>
-            	<img src="#" id ='upload_img'/>
-            	<p>Album:
-            	<select name="album_id">
-            		<?php 
-            			$albums = (array) Albums::find_all();
-            			foreach ($albums as $album) {
-            				echo "<option value='". $album->id."'>". $album->album_title."</option>";
-            			}
-            		 ?>
-            	</select></p>
-            	<input type="radio" name="visible" value= "1" checked="checked">Visible
-            	<input type="radio" name="visible" value= "0">Hidden
             
+            <?php echo form_open_multipart('photo/upload');?>
+
+            <?php if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
+            <?php echo output_message($this->session->flashdata('message'));?>
+            <p><input type="file" name="file_upload" multiple = "multiple" id="imgInp" style="width:20%;"></p>
+            <img src="#" id ='upload_img'/>
+            <p>Album:
+            <select name="album_id">
+            	<?php 
+            		$albums = (array) Albums::find_all();
+            		foreach ($albums as $album) {
+            			echo "<option value='". $album->id."'>". $album->album_title."</option>";
+            		}
+            	 ?>
+            </select></p>
+            <input type="radio" name="visible" value= "1" checked="checked">Visible
+            <input type="radio" name="visible" value= "0">Hidden
             
-            	<p>Caption: <input type="text" name="caption" value=""></p>
-            		<input type="submit" name="submit" value = "Upload">
-            	</form>
-            	
-    </form>
+            <p>Photo Title: <input type="text" name="pic_title" value=""></p>
+            <p>Caption: <input type="text" name="caption" value=""></p>
+            	<input type="submit" name="submit" value = "Upload">
+            </form>        	
+<?php
+    if(isset($upload_data)){
+        echo "<ul>";
+        foreach($upload_data as $item => $value){
+            echo '<li>'.$item.':'.$value.'</li>';
+        }
+        echo "</ul>";
+    }
+?>
             
     </div>
     </div>

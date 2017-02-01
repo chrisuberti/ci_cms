@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Photo extends MY_Controller{
-	var $data;
+
 	
 	
 	
@@ -13,8 +13,10 @@ class Photo extends MY_Controller{
 		$this->load->library('upload');
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
         
-        
+        $data['title']='Photos - '.$this->config->item('site_title', 'ion_auth');
 		
+        
+        $this->load->vars($data);
 		
 	}
         
@@ -34,7 +36,6 @@ class Photo extends MY_Controller{
         	if (!$this->ion_auth->logged_in()){
 				redirect('auth/login', 'refresh');
 			}else{
-				$data['title']='Manage Photos - '.$this->config->item('site_title', 'ion_auth');
 				$this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
 		    	$this->table->set_heading('Image','&nbsp', 'Album', 'Size', 'Date Published', '');
 		    	$images = $this->images->find_all();
@@ -59,6 +60,7 @@ class Photo extends MY_Controller{
 		    			$date_published = pretty_date($photo->pub_date);
 		    			$del_button = form_open('photo/del_img/'.$photo->id);
 		    			$del_button .= form_submit('del_img', 'Delete');
+		    			$del_button .= form_close();
 		    			
 		    			$this->table->add_row($title, $image, $album->album_title, $size, $date_published, $del_button);
 		    		}
@@ -71,7 +73,21 @@ class Photo extends MY_Controller{
 	        }
         }
         
-        public function del_img(){
+        public function del_img($id = NULL, $album=NULL){
+        	if($photo=Images::find_by_id($id)){
+        		$photo->destroy();
+        		$photo->delete();
+        		$this->session->set_flashdata('message', $photo->title. ' Deleted');
+        		if(isset($album)){
+        			redirect('photo/all_albums');
+        		}else{
+        			redirect('photo/all_imgs');
+        		}
+        	}else{
+        		$this->session->set_flashdata('message','Photo not found');
+        		redirect('photo/all_imgs');
+        		
+        	}
         	
         }
 
@@ -79,6 +95,8 @@ class Photo extends MY_Controller{
         if (!$this->ion_auth->logged_in()){
 			redirect('auth/login', 'refresh');
 		}else{
+			$data['title']='Upload Photo - '.$this->config->item('site_title', 'ion_auth');
+				
         	if(!empty($_POST)){
         		
         		$photo = new Images;
@@ -86,12 +104,11 @@ class Photo extends MY_Controller{
 				$photo->title = $_POST['pic_title'];
 				$photo->album_id = $_POST['album_id'];
 				$photo->visible = $_POST['visible'];
-				
+        		$album_slug = $this->albums->find_by_id($photo->album_id)->album_dir;
         		
-        		
-	    	    $config['upload_path']          = "./uploads/".$photo->image_path();
+	    	    $config['upload_path']          = "./".$photo->image_path();
 	            $config['allowed_types']        = 'gif|jpg|png';
-	            $config['max_size']             = 100;
+	            $config['max_size']             = 100000;
 	            $config['max_width']            = 1024;
 	            $config['max_height']           = 768;
 	            $config['overwrite']			= TRUE;
@@ -107,9 +124,9 @@ class Photo extends MY_Controller{
 				
 				
 	            if(!$this->upload->do_upload('file_upload')){
-	            	$data['error']=$this->upload->display_errors();
-	            	
-	            	$this->load->view('auth/blog/upload_form', $data);
+	            	$this->session->set_flashdata('message',$this->upload->display_errors());
+	            	$data['photo_info'] = $config;
+	            	$this->load->view('auth/blog/photo_upload', $data);
 	            }else{
 	            	$data['upload_data']=$this->upload->data();
 	            	$photo->filename = $this->upload->data('file_name');
@@ -119,12 +136,13 @@ class Photo extends MY_Controller{
 		            
 		            $data['photo']=$photo;
 	            	$photo->save();
-	            	$this->load->view('auth/blog/upload_form', $data);
+	            	$this->session->set_flashdata('message', 'uploading multiple photos');
 	            }
-        }else{
-        	$this->load->view('auth/blog/upload_form', array('error'=>''));
+	            redirect('photo/all_imgs');
+        	}else{
+        		$this->load->view('auth/blog/photo_upload', $data);
         }
-    }
+    	}
         }
 
         
