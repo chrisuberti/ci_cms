@@ -19,7 +19,7 @@
 
             <?php if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
             <?php echo output_message($this->session->flashdata('message'));?>
-            <p><input type="file" name="file_upload" multiple = "multiple" id="imgInp" style="width:20%;"></p>
+            <p><input type="file" name="file_upload[]" class="form-control" multiple/></p>
             <img src="#" id ='upload_img'/>
             <p>Album:
             <select name="album_id">

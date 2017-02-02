@@ -98,47 +98,59 @@ class Photo extends MY_Controller{
 			$data['title']='Upload Photo - '.$this->config->item('site_title', 'ion_auth');
 				
         	if(!empty($_POST)){
-        		
-        		$photo = new Images;
-				$photo->caption = $_POST['caption'];
-				$photo->title = $_POST['pic_title'];
-				$photo->album_id = $_POST['album_id'];
-				$photo->visible = $_POST['visible'];
-        		$album_slug = $this->albums->find_by_id($photo->album_id)->album_dir;
-        		
-	    	    $config['upload_path']          = "./".$photo->image_path();
-	            $config['allowed_types']        = 'gif|jpg|png';
-	            $config['max_size']             = 100000;
-	            $config['max_width']            = 1024;
-	            $config['max_height']           = 768;
-	            $config['overwrite']			= TRUE;
-	            
-	            
-	            
-	            
-	            
-	            $this->upload->initialize($config);
-	            $data['error']=NULL;
-	            
-	           
-				
-				
-	            if(!$this->upload->do_upload('file_upload')){
-	            	$this->session->set_flashdata('message',$this->upload->display_errors());
-	            	$data['photo_info'] = $config;
-	            	$this->load->view('auth/blog/photo_upload', $data);
-	            }else{
-	            	$data['upload_data']=$this->upload->data();
-	            	$photo->filename = $this->upload->data('file_name');
-					$photo->type = $this->upload->data('image_type');
-					$photo->size = $this->upload->data('file_size')*1048576;
-					$photo->size = $photo->size_as_text();
+        		$fileCount = count($_FILES['file_upload']['name']);
+        		var_dump($_FILES['file_upload']);
+	        	for($i=0; $i<$fileCount; $i++){	
+	        		$_FILES['userFile']['name']= $_FILES['file_upload']['name'][$i];
+			        $_FILES['userFile']['type']= $_FILES['file_upload']['type'][$i];
+			        $_FILES['userFile']['tmp_name']= $_FILES['file_upload']['tmp_name'][$i];
+			        $_FILES['userFile']['error']= $_FILES['file_upload']['error'][$i];
+			        $_FILES['userFile']['size']= $_FILES['file_upload']['size'][$i];
+	        		
+	        		
+	        		
+	        		$photo = new Images;
+					$photo->caption = $_POST['caption'];
+					$photo->title = $_POST['pic_title'];
+					$photo->album_id = $_POST['album_id'];
+					$photo->visible = $_POST['visible'];
+	        		$album_slug = $this->albums->find_by_id($photo->album_id)->album_dir;
+	        		
+		    	    $config['upload_path']          = "./".$photo->image_path();
+		            $config['allowed_types']        = 'gif|jpg|png';
+		            $config['max_size']             = 100000;
+		            $config['max_width']            = 4024;
+		            $config['max_height']           = 3768;
+		            $config['overwrite']			= TRUE;
 		            
-		            $data['photo']=$photo;
-	            	$photo->save();
-	            	$this->session->set_flashdata('message', 'uploading multiple photos');
-	            }
-	            redirect('photo/all_imgs');
+		            //need to swith all multiple file variables over to $_file['doupload'] in order for CI thing to work.
+		            
+		            
+		            
+		            $this->upload->initialize($config);
+		            $data['error']=NULL;
+		            
+		           
+					
+				
+		            if(!$this->upload->do_upload('userFile')){
+		            	$this->session->set_flashdata('message',$this->upload->display_errors());
+		            	$data['photo_info'] = $config;
+		            	//$this->load->view('auth/blog/photo_upload', $data);
+		            }else{
+		            	$data['upload_data']=$this->upload->data();
+		            	$photo->filename = $this->upload->data('file_name');
+						$photo->type = $this->upload->data('image_type');
+						$photo->size = $this->upload->data('file_size')*1048576;
+						$photo->size = $photo->size_as_text();
+			            
+			            $data['photo']=$photo;
+		            	$photo->save();
+		            	$this->session->set_flashdata('message', 'Uploaded Multiple Photos');
+		            }
+		            
+	        	}
+	        	redirect('photo/all_imgs');
         	}else{
         		$this->load->view('auth/blog/photo_upload', $data);
         }
