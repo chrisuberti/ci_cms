@@ -18,7 +18,7 @@
             <?php 
             if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
             <?php echo output_message($this->session->flashdata('message')); ?>
-            <?php preprint($albums); ?>
+            <?php echo($albums); ?>
           </div><!-- Close content -->
         </div>
     </div>

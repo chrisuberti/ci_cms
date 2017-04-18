@@ -116,7 +116,7 @@ class Photo extends MY_Controller{
         	$data['title']='Photo Album Overview - '.$this->config->item('site_title', 'ion_auth');
         	
         	$images = $this->albums->find_all();
-        	$data['albums']=$images;
+        	$data['albums']=$this->albums->create_album_table();
         	
         	
         	$this->load->view('auth/blog/all_albums', $data);
@@ -229,10 +229,9 @@ class Photo extends MY_Controller{
 							}
 						}	
 					}
+					$album = $this->albums->find_by_id($album_id);
 					
-					
-				}else{
-					
+					$this->load->view('auth/blog/edit_album', $data);
 				}
 		}
 		}
