@@ -10,6 +10,7 @@
         <div class="col-lg-12">
             <h1 class = "page-header"><?php echo $title;?></h1>
             <p><?php echo lang('index_subheading');?></p>
+            <p><?php echo anchor('photo/add_album', "+Album");?></p>
         </div>
 
     <div id="content-outer" class ="clear"><div id="content-wrapper">
@@ -17,6 +18,7 @@
             <?php 
             if(validation_errors()){echo validation_errors('<p class = "error">','</p>');}?>
             <?php echo output_message($this->session->flashdata('message')); ?>
+            <?php preprint($albums); ?>
           </div><!-- Close content -->
         </div>
     </div>

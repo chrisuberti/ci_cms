@@ -172,9 +172,11 @@ class Blog extends MY_Controller{
 			$this->form_validation->set_rules('comment', 'Comment', 'required');
 			
 			if($this->posts->find_by_id($id)){
-				foreach($this->posts->find_by_id($id) as $row){
-					$data['title']=$row->title;
-					$data['content'] = $row->content;
+				if(is_null($id)){
+					foreach($this->posts->find_by_id($id) as $row){
+						$data['title']=$row->title;
+						$data['content'] = $row->content;
+					}
 				}
 				if($this->form_validation->run() == FALSE){
 					$this->load->view('blog/post', $data);

@@ -10,12 +10,8 @@ class Albums extends MY_Model{
 	public $album_title; 
 	public $album_dir;
 	public $caption;
-	public $category_id;
-	public $credit;
-	public $color_tag;
 	public $visible;
 	public $featured_photo_id;
-	public $errors;
 	
 	public function __construct(){
 		parent::__construct();
@@ -60,8 +56,8 @@ class Albums extends MY_Model{
 			$this->errors[] = "Could not create directory";
 			return false;
 		}else{
-			$this->create();
 			mkdir($path);
+			$this->create();
 			return true;
 		}
 	}

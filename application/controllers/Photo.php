@@ -91,6 +91,8 @@ class Photo extends MY_Controller{
         	
         }
 
+
+
         public function upload(){
         if (!$this->ion_auth->logged_in()){
 			redirect('auth/login', 'refresh');
@@ -98,109 +100,57 @@ class Photo extends MY_Controller{
 			$data['title']='Upload Photo - '.$this->config->item('site_title', 'ion_auth');
 				
         	if(!empty($_POST)){
-        		$fileCount = count($_FILES['file_upload']['name']);
-        		var_dump($_FILES['file_upload']);
-	        	for($i=0; $i<$fileCount; $i++){	
-	        		$_FILES['userFile']['name']= $_FILES['file_upload']['name'][$i];
-			        $_FILES['userFile']['type']= $_FILES['file_upload']['type'][$i];
-			        $_FILES['userFile']['tmp_name']= $_FILES['file_upload']['tmp_name'][$i];
-			        $_FILES['userFile']['error']= $_FILES['file_upload']['error'][$i];
-			        $_FILES['userFile']['size']= $_FILES['file_upload']['size'][$i];
-	        		
-	        		
-	        		
-	        		$photo = new Images;
-					$photo->caption = $_POST['caption'];
-					$photo->title = $_POST['pic_title'];
-					$photo->album_id = $_POST['album_id'];
-					$photo->visible = $_POST['visible'];
-	        		$album_slug = $this->albums->find_by_id($photo->album_id)->album_dir;
-	        		
-		    	    $config['upload_path']          = "./".$photo->image_path();
-		            $config['allowed_types']        = 'gif|jpg|png';
-		            $config['max_size']             = 100000;
-		            $config['max_width']            = 4024;
-		            $config['max_height']           = 3768;
-		            $config['overwrite']			= TRUE;
-		            
-		            //need to swith all multiple file variables over to $_file['doupload'] in order for CI thing to work.
-		            
-		            
-		            
-		            $this->upload->initialize($config);
-		            $data['error']=NULL;
-		            
-		           
-					
-				
-		            if(!$this->upload->do_upload('userFile')){
-		            	$this->session->set_flashdata('message',$this->upload->display_errors());
-		            	$data['photo_info'] = $config;
-		            	//$this->load->view('auth/blog/photo_upload', $data);
-		            }else{
-		            	$data['upload_data']=$this->upload->data();
-		            	$photo->filename = $this->upload->data('file_name');
-						$photo->type = $this->upload->data('image_type');
-						$photo->size = $this->upload->data('file_size')*1048576;
-						$photo->size = $photo->size_as_text();
-			            
-			            $data['photo']=$photo;
-		            	$photo->save();
-		            	$this->session->set_flashdata('message', 'Uploaded Multiple Photos');
-		            }
-		            
+        		$this->agnostic_photo_upload();
 	        	}
-	        	redirect('photo/all_imgs');
-        	}else{
+
+        		$data['files']=$this->images->find_all();
         		$this->load->view('auth/blog/photo_upload', $data);
-        }
-    	}
-        }
-
-        
-        
-        
-        
-
-        public function add_photo(){
-        	if (!$this->ion_auth->logged_in()){
-			redirect('auth/login', 'refresh');
-			}else{
-				$data['max_file_size'] = 20 * 1048576;
-        	
-				if(!empty($_POST)){	
-					$photo = new Images;
-					$photo->caption = $_POST['caption'];
-					$photo->attach_file($_FILES['file_upload']);
-					$photo->album_id = $_POST['album_id'];
-					$photo->visible = $_POST['visible'];
-					
-					$data['photo']=$photo;
-					if ($this->save_img()) {
-						//success
-						$session->message("photograph was successfully uploaded");
-						redirect_to('manage_photos.php');
-					}else{
-						//failure
-						$message = join("<br/>",$photo->errors);
-					}
-
-				}else{
-                	
-					$data['title']='Upload Photo - '.$this->config->item('site_title', 'ion_auth');
-					$this->load->view('auth/blog/photo_upload', $data);
-                	
-					
-				}
-				
         	}
-        }
+    	}
         
+      
 
+	
         public function albums(){
         	$data['albums']=$this->albums->find_all();
         	$data['title']='Photo Album Overview - '.$this->config->item('site_title', 'ion_auth');
+        	
+        	$images = $this->albums->find_all();
+        	$data['albums']=$images;
+        	
+        	
         	$this->load->view('auth/blog/all_albums', $data);
+        	
+        	
+        	
+        }
+        
+        
+        public function add_album(){
+	        if(isset($_POST['submit'])){
+				$album = new Albums();
+				$album->album_title = $_POST['album_title'];
+				$album->album_dir = sanitize_filename($_POST['album_title']);
+				$album->caption = $_POST['caption'];
+				$album->visible=$_POST['visible'];
+				////Upload featured Photo
+					$_POST['pic_title']= $album->album_title;
+					$_POST['album_id']= 1;
+					$_POST['visible'] = $album->id;;
+					$photo_id = $this->agnostic_photo_upload();
+					$album->featured_photo_id = $photo_id;
+				
+				
+				if ($album->save()) {
+				
+					$this->session->set_flashdata('message', 'Album Created');
+					redirect_to('photo/albums');
+				}else{
+					//failure
+					$this->session->set_flashdata('message', join("<br/>",$album->errors));
+			      	$this->load->view('auth/blog/add_album');
+				}
+	        }
         }
 
 		public function edit_album($album_id=NULL){
@@ -208,9 +158,9 @@ class Photo extends MY_Controller{
 				redirect('auth/login', 'refresh');
 			}else{
 				if($album_id == NULL){
-					//add code for creating new album and uploading photos
-					echo output_message($this->session->flashdata('message'));
-					echo "Hey this is a test for no id";
+					$this->session->set_flashdata('message', 'No Album Found');
+					
+					redirect('photo/new_album');
 				}elseif(is_object(Albums::find_by_id($album_id))){
 					
 					
@@ -282,11 +232,67 @@ class Photo extends MY_Controller{
 					
 					
 				}else{
-					$this->session->set_flashdata('message', 'No Album Found');
 					
-					redirect('photo/albums');
 				}
 		}
 		}
-		
+	
+		public function agnostic_photo_upload(){
+    		$fileCount = count($_FILES['file_upload']['name']);
+    		var_dump($_FILES['file_upload']);
+        	for($i=0; $i<$fileCount; $i++){	
+        		$_FILES['userFile']['name']= $_FILES['file_upload']['name'][$i];
+		        $_FILES['userFile']['type']= $_FILES['file_upload']['type'][$i];
+		        $_FILES['userFile']['tmp_name']= $_FILES['file_upload']['tmp_name'][$i];
+		        $_FILES['userFile']['error']= $_FILES['file_upload']['error'][$i];
+		        $_FILES['userFile']['size']= $_FILES['file_upload']['size'][$i];
+        		
+        		
+        		
+        		$photo = new Images;
+				$photo->caption = $_POST['caption'];
+				$photo->title = $_POST['pic_title'];
+				$photo->album_id = $_POST['album_id'];
+				$photo->visible = $_POST['visible'];
+        		$album_slug = $this->albums->find_by_id($photo->album_id)->album_dir;
+        		
+	    	    $config['upload_path']          = "./".$photo->image_path();
+	            $config['allowed_types']        = 'gif|jpg|png';
+	            $config['max_size']             = 100000;
+	            $config['max_width']            = 4024;
+	            $config['max_height']           = 3768;
+	            $config['overwrite']			= TRUE;
+	            
+	            //need to swith all multiple file variables over to $_file['doupload'] in order for CI thing to work.
+	            
+	            
+	            
+	            $this->upload->initialize($config);
+	            $data['error']=NULL;
+	            
+	           
+				
+			
+	            if(!$this->upload->do_upload('userFile')){
+	            	$this->session->set_flashdata('message',$this->upload->display_errors());
+	            	$data['photo_info'] = $config;
+	            	return false;
+	            	//$this->load->view('auth/blog/photo_upload', $data);
+	            }else{
+	            	$data['upload_data']=$this->upload->data();
+	            	$photo->filename = $this->upload->data('file_name');
+					$photo->type = $this->upload->data('image_type');
+					$photo->size = $this->upload->data('file_size')*1048576;
+					$photo->size = $photo->size_as_text();
+		            
+		            $data['photo']=$photo;
+	            	$photo->save();
+	            	$this->session->set_flashdata('message', 'Uploaded Multiple Photosg');
+	            	return $photo->id;
+	            	
+	            }
+	            
+        	}
+	}
+	
 }
