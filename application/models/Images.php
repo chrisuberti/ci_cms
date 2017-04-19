@@ -69,6 +69,47 @@ class Images extends MY_Model{
 		//remove the file
 
 	}
+	public function edit_photos_album($album_id = NULL){
+		$photos = static::find_by_album($album_id);
+
+		$album_view = "";
+			foreach ($photos as $photo) {
+	
+			$image_config = array(
+				//'src'	=>	'uploads/'.$album->album_dir . '/'.$photo->filename,
+				'src'	=>	$photo->image_path(),
+				'alt'	=>	$photo->caption,
+				'class'	=>	'admin_img',
+				'width'	=>	'100%',
+				'height'=>'auto',
+				'title'	=>	$photo->title,
+				'class' => 'admin-image');
+			    $album_view .= "<div class='img-container col-sm-3'>". img($image_config);
+			    $album_view .= "<div class='pic-middle'><div class ='img-text'>";
+
+			    $del_but = anchor('photo/del_img/'.$photo->id.'/'.$album_id, 'Delete', array('class'=>"btn btn-danger", 'onClick' =>"return deleteconfirm();"));
+			    $edit_but = anchor('photo/edit_img/'.$photo->id, 'Edit', 'class="btn btn-primary"');
+			    
+			    
+			    $album_view .= $del_but. ' | '. $edit_but;
+			    $album_view .= "</div></div>";
+			    
+			   
+			    
+			    
+			    $album_view .= $photo->title;
+			    $album_view .= "</div>";
+			    $album_view .= "</div>";
+			}
+		
+		return $album_view;
+			
+	}
+	
+	public function find_by_album($album_id=NULL){
+		$albums = static::find_by('album_id', $album_id);
+		return $albums;
+	}
 
 }
 //	public static function count_all(){

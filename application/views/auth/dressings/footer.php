@@ -27,6 +27,18 @@
     <script src='<?php echo asset_url()."dist/js/sb-admin-2.js";?>'></script>
     <!-- UberCMS javascript file -->
     <script src='<?php echo asset_url()."js/main.js";?>'></script>
+    
+    
+    <script>
+        function deleteconfirm()
+        {
+            job=confirm("Are you sure to delete permanently?");
+            if(job!=true)
+            {
+                return false;
+            }
+        }
+</script>
 
 </body>
 

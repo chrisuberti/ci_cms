@@ -29,7 +29,11 @@ class MY_Model extends CI_Model{
 	
 	static function find_by_id($id = ""){
 	  $query = self::$db->where('id', $id)->get(static::DB_TABLE)->custom_result_object(get_called_class());
-	  return $query[0];
+	  if(empty($query)){
+	    return false;
+	  }else{
+	    return $query[0];
+	  }
 	}
 	
 	static function find_by($column = "", $column_val = ""){

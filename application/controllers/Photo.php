@@ -37,7 +37,7 @@ class Photo extends MY_Controller{
 				redirect('auth/login', 'refresh');
 			}else{
 				$this->table->set_template(array('table_open'=>"<table class='table table-striped table-bordered table-hover' id='post_summary_table'>"));
-		    	$this->table->set_heading('Image','&nbsp', 'Album', 'Size', 'Date Published', '');
+		    	$this->table->set_heading('Image',array('data'=>'&nbsp', 'style'=>'width:20%'), 'Album', 'Size', 'Date Published', '');
 		    	$images = $this->images->find_all();
 		    	if($images){
 		    		foreach($images as $photo){
@@ -50,7 +50,8 @@ class Photo extends MY_Controller{
 		    				'src'	=>	$photo->image_path(),
 		    				'alt'	=>	$photo->caption,
 		    				'class'	=>	'admin_img',
-		    				'width'	=>	'10%',
+		    				'width'	=>	'100%',
+		    				'height'=>'auto',
 		    				'title'	=>	$photo->title);
 		    			$image = "<div>". img($image_config);
 		    			$image .= "</div>".$photo->caption;
@@ -59,7 +60,7 @@ class Photo extends MY_Controller{
 		    			$size = $photo->size_as_text();
 		    			$date_published = pretty_date($photo->pub_date);
 		    			$del_button = form_open('photo/del_img/'.$photo->id);
-		    			$del_button .= form_submit('del_img', 'Delete');
+		    			$del_button .= form_submit('del_img', 'Delete', array("onClick"=>"return deleteconfirm();"));
 		    			$del_button .= form_close();
 		    			
 		    			$this->table->add_row($title, $image, $album->album_title, $size, $date_published, $del_button);
@@ -79,7 +80,7 @@ class Photo extends MY_Controller{
         		$photo->delete();
         		$this->session->set_flashdata('message', $photo->title. ' Deleted');
         		if(isset($album)){
-        			redirect('photo/all_albums');
+        			redirect('photo/edit_album/'.$album);
         		}else{
         			redirect('photo/all_imgs');
         		}
@@ -162,11 +163,7 @@ class Photo extends MY_Controller{
 					
 					redirect('photo/new_album');
 				}elseif(is_object(Albums::find_by_id($album_id))){
-					
-					
-					echo output_message($this->session->flashdata('message'));
-					
-					
+
 					if (isset($_POST['submit'])) {
 						if (isset($_GET['id'])) {
 							//if (isset($_FILES['files'])) {
@@ -229,7 +226,8 @@ class Photo extends MY_Controller{
 							}
 						}	
 					}
-					$album = $this->albums->find_by_id($album_id);
+					$data['album'] = $this->albums->find_by_id($album_id);
+					$data['album_photos']=$this->images->edit_photos_album($album_id);
 					
 					$this->load->view('auth/blog/edit_album', $data);
 				}

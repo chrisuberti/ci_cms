@@ -28,13 +28,19 @@ class Albums extends MY_Model{
 	    	    foreach($query as $album){
 	    	    	
 	    	        $album_title ="<h5><b>". $album->album_title. "</h5></b>";
-	    	        $album_title .= anchor('photo/edit_album/'.$album->id, "Edit"). " | ".anchor("photo/delete_album/".$album->id, "Delete", 'style="color:red"');
+	    	        $album_title .= anchor('photo/edit_album/'.$album->id, "Edit"). " | ";
+	    	        $album_title .= anchor("photo/delete_album/".$album->id, "Delete", array('style'=>"color:red", 'onClick'=>"return deleteconfirm();"));
 	    	        $caption = $album->caption;
 	    	        $visible = $album->visible;
 	    	        $author = $this->ion_auth_model->user($album->author_id)->full_name();
 	    	        //Retrive featured image:
 	    	        $photo = $this->images->find_by_id($album->featured_photo_id);	
-		    			$image_config = array(
+	    	        
+		    			
+	    	        if(!$photo){
+	    	        	$feat_photo = "<div>No Featured Image Set</div>";
+	    	        }else{
+	    	        	$image_config = array(
 		    				//'src'	=>	'uploads/'.$album->album_dir . '/'.$photo->filename,
 		    				'src'	=>	$photo->image_path(),
 		    				'alt'	=>	$photo->caption,
@@ -42,9 +48,8 @@ class Albums extends MY_Model{
 		    				'width'	=>	'100%',
 		    				'height' => 'auto',
 		    				'title'	=>	$photo->title);
-	    	        
-	    	        $feat_photo = "<div>". img($image_config)."</div>";
-	    	        
+	    	        	$feat_photo = "<div>". img($image_config)."</div>";
+	    	        }
 	    	        $this->table->add_row($album_title, $author, $caption, pretty_date($album->date), $feat_photo);
 	    	    }
 	    	
