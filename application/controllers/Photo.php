@@ -31,6 +31,41 @@ class Photo extends MY_Controller{
 			
 			}
         }
+        public function edit_img($id=NULL){
+        	if (!$this->ion_auth->logged_in()){
+				redirect('auth/login', 'refresh');
+			}else{
+				if($id == NULL){
+					$this->session->set_flashdata('message', 'No Photo Found');
+					
+					redirect('photo/new_photo');
+				}elseif($photo = Images::find_by_id($id)){
+					if(isset($_POST['submit'])){
+						$photo->title = $_POST['title'];
+						$photo->caption = $_POST['caption'];
+						$photo->visible = $_POST['visible'];
+						$photo->save();
+					}
+					
+					
+					$data['photo']=$photo;
+					$image_config = array(
+    				//'src'	=>	'uploads/'.$album->album_dir . '/'.$photo->filename,
+    				'src'	=>	$photo->image_path(),
+    				'alt'	=>	$photo->caption,
+    				'class'	=>	'admin_img',
+    				'width'	=>	'50%',
+    				'height' => 'auto',
+    				'title'	=>	$photo->title);
+	        		$data['feat_photo'] = "<div>". img($image_config)."</div>";
+	        		
+
+					$data['del_button']=anchor("photo/del_img/".$photo->id, "Delete", array('class'=>'btn btn-danger','onClick'=>"return deleteconfirm();"));
+					$this->load->view('auth/blog/edit_photo', $data);
+        	}
+		}
+        }
+        
         
         public function all_imgs(){
         	if (!$this->ion_auth->logged_in()){
@@ -42,7 +77,7 @@ class Photo extends MY_Controller{
 		    	if($images){
 		    		foreach($images as $photo){
 		    			$album = $this->albums->find_by_id($photo->album_id);
-		    			$title = $photo->title . "<br>".anchor('photo/edit/'.$photo->id, 'Edit');
+		    			$title = $photo->title . "<br>".anchor('photo/edit_img/'.$photo->id, 'Edit', array('class'=>'btn btn-success'));
 		    			
 		    			
 		    			$image_config = array(
@@ -60,7 +95,7 @@ class Photo extends MY_Controller{
 		    			$size = $photo->size_as_text();
 		    			$date_published = pretty_date($photo->pub_date);
 		    			$del_button = form_open('photo/del_img/'.$photo->id);
-		    			$del_button .= form_submit('del_img', 'Delete', array("onClick"=>"return deleteconfirm();"));
+		    			$del_button .= form_submit('del_img', 'Delete', array('class'=>'btn btn-danger',"onClick"=>"return deleteconfirm();"));
 		    			$del_button .= form_close();
 		    			
 		    			$this->table->add_row($title, $image, $album->album_title, $size, $date_published, $del_button);

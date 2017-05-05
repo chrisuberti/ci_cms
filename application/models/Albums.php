@@ -28,8 +28,8 @@ class Albums extends MY_Model{
 	    	    foreach($query as $album){
 	    	    	
 	    	        $album_title ="<h5><b>". $album->album_title. "</h5></b>";
-	    	        $album_title .= anchor('photo/edit_album/'.$album->id, "Edit"). " | ";
-	    	        $album_title .= anchor("photo/delete_album/".$album->id, "Delete", array('style'=>"color:red", 'onClick'=>"return deleteconfirm();"));
+	    	        $album_title .= anchor('photo/edit_album/'.$album->id, "Edit", array('class'=>'btn btn-success')). " | ";
+	    	        $album_title .= anchor("photo/delete_album/".$album->id, "Delete", array('class'=>"btn btn-danger", 'onClick'=>"return deleteconfirm();"));
 	    	        $caption = $album->caption;
 	    	        $visible = $album->visible;
 	    	        $author = $this->ion_auth_model->user($album->author_id)->full_name();
