@@ -15,3 +15,5 @@ https://github.com/benedmunds/CodeIgniter-Ion-Auth.git
     <li>2. create DB and upload sql file included in repo</li>
     <li>3. Login with admin@admin.com and 'password'</li>
 </ul>
+
+<p>test<p>
