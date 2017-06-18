@@ -1,3 +1,5 @@
+Stock trading platform, using UberCMS as basis for building CRUD parts
+
 This is a personal CMS that I'm building for learning purposes and to help as base for future projects
 
 CMS is built around CodeIgniter and Auth_Ion authentication. 
